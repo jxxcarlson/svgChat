@@ -81,7 +81,14 @@ update msg model =
                 , scrollChatToBottom
                 ]
             )
-
+        SvgMsg clientAttributes ->
+          case model.clientId of
+            Nothing ->  (model, Cmd.none)
+            Just clientId ->
+              let
+                newDict = Dict.insert clientId clientAttributes model.clientDict
+              in
+                ({ model | clientDict = newDict }, Cmd.none )
         -- Empty msg that does no operations
         Noop ->
             ( model, Cmd.none )

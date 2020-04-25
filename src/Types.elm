@@ -4,16 +4,13 @@ import Lamdera exposing (ClientId)
 import Set exposing (Set)
 import Dict exposing(Dict)
 import Random exposing(Seed)
-
+import Html.Events.Extra.Mouse as Mouse
 
 type alias FrontendModel =
     { messages : List ChatMsg
     , messageFieldContent : String
     , clientDict : ClientDict
     , clientId : Maybe ClientId }
-
-
-
 
 type alias BackendModel =
     { messages : List Message
@@ -23,6 +20,8 @@ type alias BackendModel =
      }
 
 type alias ClientDict = Dict ClientId ClientAttributes
+
+-- type alias SvgMessage = ClientAttributes
 
 type alias ClientAttributes =
     { x : Float
@@ -41,6 +40,8 @@ type alias Color = {red: Float, green : Float, blue: Float}
 type FrontendMsg
     = MessageFieldChanged String
     | MessageSubmitted
+    -- | Move Mouse.Event
+    | SvgMsg ClientAttributes
     | Noop
 
 

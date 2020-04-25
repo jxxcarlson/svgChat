@@ -4,6 +4,7 @@ import Types exposing(..)
 import Random
 import Svg exposing (Svg)
 import Svg.Attributes
+import Html.Events.Extra.Mouse as Mouse
 
 newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
 newAttributes seed maxX maxY clientStatus =
@@ -51,7 +52,7 @@ word k seed =
 
 
 
-render : ClientAttributes -> Svg msg
+render : ClientAttributes -> Svg FrontendMsg
 render ca =
     Svg.circle
         [ Svg.Attributes.width (String.fromFloat (2 * ca.radius))
@@ -60,14 +61,14 @@ render ca =
         , Svg.Attributes.cy (String.fromFloat ca.y)
         , Svg.Attributes.r (String.fromFloat ca.radius)
         , Svg.Attributes.fill (toCssString ca.color)
-        -- , Mouse.onDown
-        --     (\r ->
-        --         let
-        --             ( x, y ) =
-        --                 r.clientPos
-        --         in
-        --         { cell = position, coordinates = { x = x, y = y } }
-        --     )
+        , Mouse.onMove
+           (\r ->
+                let
+                    ( x, y ) =
+                        r.screenPos |> Debug.log "POS"
+                in
+                  SvgMsg { ca | x = x - 300,  y = y - 40}
+            )
         ]
         []
 
@@ -102,4 +103,4 @@ toCssString color =
         ++ String.fromFloat (pct g)
         ++ "%,"
         ++ String.fromFloat (pct b)
-        ++ "%)" |> Debug.log "RGB"
+        ++ "%)"
