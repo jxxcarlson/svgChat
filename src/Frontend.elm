@@ -20,6 +20,7 @@ import Dict
 import Svg exposing (Svg)
 import Svg.Attributes
 import Client
+import Html.Events.Extra.Mouse as Mouse
 
 
 

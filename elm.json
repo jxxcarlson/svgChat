@@ -17,10 +17,12 @@
             "jxxcarlson/elm-widget": "3.0.0",
             "lamdera/codecs": "1.0.0",
             "lamdera/core": "1.0.0",
-            "mdgriffith/elm-ui": "1.1.5"
+            "mdgriffith/elm-ui": "1.1.5",
+            "mpizenberg/elm-pointer-events": "4.0.2"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
+            "elm/file": "1.0.5",
             "elm/time": "1.0.0",
             "elm/virtual-dom": "1.0.2"
         }
