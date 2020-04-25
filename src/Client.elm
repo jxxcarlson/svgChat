@@ -1,4 +1,4 @@
-module Client exposing(newAttributes)
+module Client exposing(newAttributes, render, toCssString)
 
 import Types exposing(..)
 import Random
@@ -19,7 +19,7 @@ newAttributes seed maxX maxY clientStatus =
     ({ x  = x
     , y = y
     , radius = 20
-    , color = { red = r, green = g, blue = b}
+    , color = { red = r, green = r, blue = b}
     , handle = handle
     , clientStatus = clientStatus}
     , seed6)
@@ -51,8 +51,8 @@ word k seed =
 
 
 
-renderClient : ClientAttributes -> Svg msg
-renderClient ca =
+render : ClientAttributes -> Svg msg
+render ca =
     Svg.circle
         [ Svg.Attributes.width (String.fromFloat (2 * ca.radius))
         , Svg.Attributes.height (String.fromFloat (2 * ca.radius))
@@ -102,4 +102,4 @@ toCssString color =
         ++ String.fromFloat (pct g)
         ++ "%,"
         ++ String.fromFloat (pct b)
-        ++ ")"
+        ++ "%)" |> Debug.log "RGB"

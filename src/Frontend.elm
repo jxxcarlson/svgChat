@@ -17,6 +17,9 @@ import Task
 import Types exposing (..)
 import Widget.Style
 import Dict
+import Svg exposing (Svg)
+import Svg.Attributes
+import Client
 
 
 
@@ -94,7 +97,7 @@ updateFromBackend msg model =
 
         FreshClientDict freshDict ->
            { model | clientDict = freshDict}
-           
+
     , Cmd.batch [ scrollChatToBottom ]
     )
 
@@ -105,16 +108,46 @@ view model =
 
 mainView : Model -> Element FrontendMsg
 mainView model =
-  row [ spacing 12 ] [
+  row [ spacing 12, paddingXY 0 20 ] [
       chatView model |> Element.html
-    , svgView model
+    , column [ width (px 502), height (px 502), Border.width 1]
+      [renderSVGAsHtml 500 500 model.clientDict |> Element.html]
   ]
 
-svgView : Model -> Element FrontendMsg
-svgView model =
-  column [alignTop, paddingXY 12 24, width (px 500), height (px 500), Background.color Style.lightBlue ] [
-     el []( text "SVG: coming soon!")
-  ]
+
+renderSVGAsHtml : Int -> Int  -> ClientDict -> Html FrontendMsg
+renderSVGAsHtml width height clientDict =
+    Svg.svg
+        [ Svg.Attributes.height (String.fromInt height)
+        , Svg.Attributes.width (String.fromInt width)
+        , Svg.Attributes.viewBox ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
+        ]
+        [ renderAsSvg  width  height clientDict ]
+
+
+renderAsSvg : Int -> Int -> ClientDict -> Svg FrontendMsg
+renderAsSvg width  height clientDict =
+    let
+       entities = Dict.toList clientDict
+         |> List.map (Tuple.second >> Client.render)
+         |> List.foldr (::) []
+
+       br : Svg FrontendMsg
+       br = backGroundRectangle width height {red = 0.10, green = 0.10, blue =  0.15}
+    in
+    Svg.g [] (entities)
+
+backGroundRectangle : Int -> Int -> Types.Color -> Svg FrontendMsg
+backGroundRectangle width height color =
+    Svg.rect
+        [ Svg.Attributes.width (String.fromInt width)
+        , Svg.Attributes.height (String.fromInt height)
+        , Svg.Attributes.x (String.fromFloat 0)
+        , Svg.Attributes.y (String.fromFloat 0)
+        , Svg.Attributes.fill (Client.toCssString color)
+        ]
+        []
+
 
 chatView : Model -> Html FrontendMsg
 chatView model =
@@ -131,9 +164,6 @@ chatView model =
         , chatInput model MessageFieldChanged
         , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
         ]
-
-
-
 
 
 chatInput : Model -> (String -> FrontendMsg) -> Html FrontendMsg
@@ -170,7 +200,7 @@ handleOfClient : Model -> ClientId -> String
 handleOfClient model clientId =
   Dict.get clientId model.clientDict
     |> Maybe.map .handle
-    |> Maybe.withDefault clientId
+    |> Maybe.withDefault "AAA"
 
 fontStyles : List (Html.Attribute msg)
 fontStyles =
