@@ -29,8 +29,10 @@ type alias ClientAttributes =
     , radius : Float
     , color : Color
     , handle : String
+    , clientStatus : ClientStatus
     }
 
+type ClientStatus = SignedIn | SignedOut
 
 type alias Color = {red: Float, green : Float, blue: Float}
 
@@ -55,7 +57,6 @@ type ToFrontend
     | ClientTimeoutReceived ClientId
     | RoomMsgReceived Message
     | FreshClientDict ClientDict
-
 
 
 type alias Message =

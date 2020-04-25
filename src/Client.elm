@@ -5,8 +5,8 @@ import Random
 import Svg exposing (Svg)
 import Svg.Attributes
 
-newAttributes : Random.Seed -> Float -> Float -> (ClientAttributes, Random.Seed)
-newAttributes seed maxX maxY =
+newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
+newAttributes seed maxX maxY clientStatus =
   let
     (handle, seed1) = map String.toUpper (word 3 seed)
     (x, seed2) = Random.step (Random.float 0 maxX) seed1
@@ -20,7 +20,8 @@ newAttributes seed maxX maxY =
     , y = y
     , radius = 20
     , color = { red = r, green = g, blue = b}
-    , handle = handle}
+    , handle = handle
+    , clientStatus = clientStatus}
     , seed6)
 
 
@@ -48,14 +49,6 @@ word k seed =
     |> \(a,b) -> (wordFromChars a, b )
 
 
-
-type alias ClientAttributes =
-    { x : Float
-    , y : Float
-    , radius : Float
-    , color : Color
-    , handle : String
-    }
 
 
 renderClient : ClientAttributes -> Svg msg

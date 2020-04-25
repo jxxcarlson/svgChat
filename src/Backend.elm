@@ -45,7 +45,7 @@ updateFromFrontend sessionId clientId msg model =
         -- A new client has joined! Add them to our clients list, and send them all messages we have so far.
         ClientJoin ->
             let
-                (newClientAttributes, newSeed) = Client.newAttributes model.seed  500 500
+                (newClientAttributes, newSeed) = Client.newAttributes model.seed  500 500 SignedIn
 
                 newClientDict = Dict.insert clientId newClientAttributes model.clientDict
 
