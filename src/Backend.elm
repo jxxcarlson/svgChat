@@ -64,6 +64,7 @@ updateFromFrontend sessionId clientId msg model =
                         |> List.map RoomMsgReceived
                         |> List.map (Lamdera.sendToFrontend clientId)
                         |> (\list -> (Lamdera.sendToFrontend clientId (FreshClientDict newClientDict))::list)
+                        |> (\list -> (Lamdera.sendToFrontend clientId (RegisterClientId clientId))::list)
                         |> Cmd.batch
             in
             ( newModel

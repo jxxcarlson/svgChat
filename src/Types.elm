@@ -9,7 +9,8 @@ import Random exposing(Seed)
 type alias FrontendModel =
     { messages : List ChatMsg
     , messageFieldContent : String
-    , clientDict : ClientDict }
+    , clientDict : ClientDict
+    , clientId : Maybe ClientId }
 
 
 
@@ -57,6 +58,7 @@ type ToFrontend
     | ClientTimeoutReceived ClientId
     | RoomMsgReceived Message
     | FreshClientDict ClientDict
+    | RegisterClientId ClientId
 
 
 type alias Message =

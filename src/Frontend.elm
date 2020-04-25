@@ -54,7 +54,12 @@ init =
     -- When the app loads, we have no messages and our message field is blank.
     -- We send an initial message to the backend, letting it know we've joined,
     -- so it knows to send us history and new messages
-    ( { messages = [], messageFieldContent = "" , clientDict = Dict.empty}, Lamdera.sendToBackend ClientJoin )
+    ( { messages = []
+      , messageFieldContent = ""
+      , clientDict = Dict.empty
+      , clientId = Nothing
+    }
+      , Lamdera.sendToBackend ClientJoin )
 
 
 {-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
@@ -98,6 +103,9 @@ updateFromBackend msg model =
         FreshClientDict freshDict ->
            { model | clientDict = freshDict}
 
+        RegisterClientId clientId ->
+            {model | clientId = Just clientId}
+
     , Cmd.batch [ scrollChatToBottom ]
     )
 
@@ -108,12 +116,41 @@ view model =
 
 mainView : Model -> Element FrontendMsg
 mainView model =
-  row [ spacing 12, paddingXY 0 20 ] [
-      chatView model |> Element.html
-    , column [ width (px 502), height (px 502), Border.width 1]
-      [renderSVGAsHtml 500 500 model.clientDict |> Element.html]
+  row [ spacing 24, paddingXY 40 20 ] [
+      chatView model  |> Element.html
+    , conferenceRoom 502 502 model
+    , roster model
+
   ]
 
+
+roster : Model -> Element FrontendMsg
+roster model =
+  column [spacing 12] [
+    el [Font.bold, Font.size 24] (Element.text "Roster")
+    , roster_ model
+  ]
+
+roster_ : Model -> Element FrontendMsg
+roster_ model =
+ let
+   renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
+   renderItem (clientId, ca) =
+     row [spacing 8] [
+        el [width (px 70)] (text ca.handle)
+     ]
+
+ in
+  column [width (px 500), height (px 500), Font.size 16, spacing 6]
+    (model.clientDict
+      |> Dict.toList
+      |> List.map renderItem)
+
+
+conferenceRoom : Int -> Int  -> Model -> Element FrontendMsg
+conferenceRoom width_ height_ model =
+  column [ width (px width_), height (px height_), Border.width 1]
+    [renderSVGAsHtml 500 500 model.clientDict |> Element.html]
 
 renderSVGAsHtml : Int -> Int  -> ClientDict -> Html FrontendMsg
 renderSVGAsHtml width height clientDict =
@@ -163,6 +200,7 @@ chatView model =
                 ]
         , chatInput model MessageFieldChanged
         , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
+        , Html.p [] [Html.text (handleOfClient model (Maybe.withDefault "XXX" model.clientId))]
         ]
 
 

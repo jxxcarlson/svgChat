@@ -11,9 +11,9 @@ newAttributes seed maxX maxY clientStatus =
     (handle, seed1) = map String.toUpper (word 3 seed)
     (x, seed2) = Random.step (Random.float 0 maxX) seed1
     (y, seed3) = Random.step (Random.float 0 maxY) seed2
-    (r, seed4) = Random.step (Random.float 0.3 1) seed3
-    (g, seed5) = Random.step (Random.float 0.3 1) seed4
-    (b, seed6) = Random.step (Random.float 0.3 1) seed5
+    (r, seed4) = Random.step (Random.float 0 1) seed3
+    (g, seed5) = Random.step (Random.float 0 1) seed4
+    (b, seed6) = Random.step (Random.float 0 1) seed5
 
   in
     ({ x  = x
