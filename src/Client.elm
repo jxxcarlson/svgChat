@@ -6,6 +6,7 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra
+import Svg.Events
 
 newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
 newAttributes seed maxX maxY clientStatus =
@@ -16,8 +17,8 @@ newAttributes seed maxX maxY clientStatus =
     (k, seed4) = Random.step (Random.int 0 11) seed3
     (color, fontColor) = getColors k
   in
-    ({ x  = x
-    , y = y
+    ({ x  = 0
+    , y = 0
     , radius = 20
     , color = color
     , fontColor = fontColor
@@ -83,9 +84,16 @@ renderCircle ca =
            (\r ->
                 let
                     ( x, y ) =
-                        r.screenPos |> Debug.log "POS"
+                        r.screenPos |> Debug.log "SCREEN POS"
+                        -- r.clientPos |> Debug.log "POS"
+                    _ = r.clientPos |> Debug.log "CLIENT POS"
+                    _ = r.pagePos |> Debug.log "PAGE POS"
                 in
+                  -- SvgMsg { ca | x = x - 300,  y = y - 40}
+                  -- SvgMsg { ca | x = x , y = y }
+                  --- SvgMsg { ca | x = x - 345,  y = y - 130} |> Debug.log "SvgMsg"
                   SvgMsg { ca | x = x - 300,  y = y - 40}
+
             )
         , Mouse.onDown (\r ->
              let
