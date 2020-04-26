@@ -21,6 +21,7 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Client
 import Html.Events.Extra.Mouse as Mouse
+import Widget.Bar
 
 
 
@@ -145,14 +146,22 @@ roster_ model =
    renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
    renderItem (clientId, ca) =
      row [spacing 8] [
-        el [width (px 70)] (text ca.handle)
+        el [width (px 30)] (text ca.handle)
+        , clientColorBar ca.color.red ca.color.green ca.color.blue
      ]
-
  in
   column [width (px 500), height (px 500), Font.size 16, spacing 6]
     (model.clientDict
       |> Dict.toList
       |> List.map renderItem)
+
+clientColorBar : Float -> Float -> Float -> Element FrontendMsg
+clientColorBar r g b =
+  Widget.Bar.make 80
+     |> Widget.Bar.withRGB r g b
+     |> Widget.Bar.horizontal
+     |> Widget.Bar.withSize 50
+     |> Widget.Bar.toElement
 
 
 conferenceRoom : Int -> Int  -> Model -> Element FrontendMsg
@@ -208,9 +217,42 @@ chatView model =
                 ]
         , chatInput model MessageFieldChanged
         , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
-        , Html.p [] [Html.text (handleOfClient model (Maybe.withDefault "XXX" model.clientId))]
+        , Html.p [] [Html.text (clientInfo model)]
         ]
 
+
+clientInfo : Model -> String
+clientInfo model =
+  case model.clientId of
+    Nothing -> "---"
+    Just clientId ->
+      case Dict.get clientId model.clientDict of
+        Nothing -> "---"
+        Just info ->
+          let
+            handle = info.handle
+            x = info.x |> roundTo 1 |> String.fromFloat
+            y = info.y |> roundTo 1 |> String.fromFloat
+          in
+            handle ++ ", x: " ++ x ++ ", y: " ++ y
+
+roundTo : Int -> Float -> Float
+roundTo k x =
+  let
+    factor = 10.0 ^ (toFloat k)
+    xx = round (factor * x) |> toFloat
+  in
+   xx/factor
+
+handleOfClient : Model -> ClientId -> String
+handleOfClient model clientId =
+  let
+    info = Dict.get clientId model.clientDict
+    handle = info
+      |> Maybe.map .handle
+      |> Maybe.withDefault "AAA"
+  in
+    handle
 
 chatInput : Model -> (String -> FrontendMsg) -> Html FrontendMsg
 chatInput model msg =
@@ -241,12 +283,6 @@ viewMessage model msg =
         MsgReceived clientId message ->
             Html.div [] [ Html.text <| "[" ++ (handleOfClient model clientId) ++ "]: " ++ message ]
 
-
-handleOfClient : Model -> ClientId -> String
-handleOfClient model clientId =
-  Dict.get clientId model.clientDict
-    |> Maybe.map .handle
-    |> Maybe.withDefault "AAA"
 
 fontStyles : List (Html.Attribute msg)
 fontStyles =

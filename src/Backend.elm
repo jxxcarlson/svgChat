@@ -28,7 +28,7 @@ init =
     ( { messages = []
     , clients = Set.empty
     , clientDict = Dict.empty
-    , seed = Random.initialSeed 1234}
+    , seed = Random.initialSeed 123499115}
     , Cmd.none )
 
 
