@@ -60,6 +60,7 @@ init =
       , messageFieldContent = ""
       , clientDict = Dict.empty
       , clientId = Nothing
+      , isDragging = False
     }
       , Lamdera.sendToBackend ClientJoin )
 
@@ -83,13 +84,27 @@ update msg model =
                 ]
             )
         SvgMsg clientAttributes ->
-          case model.clientId of
-            Nothing ->  (model, Cmd.none)
-            Just clientId ->
+          case (model.clientId, model.isDragging) of
+            (Nothing, _) ->  (model, Cmd.none)
+            (_, False) ->  (model, Cmd.none)
+            (Just clientId, True) ->
               let
                 newDict = Dict.insert clientId clientAttributes model.clientDict
               in
                 ({ model | clientDict = newDict }, Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
+
+        SvgDownMsg (x, y) ->
+          let
+            _ = Debug.log "Down" (x, y)
+          in
+          ({model | isDragging = True}, Cmd.none)
+
+        SvgUpMsg (x, y) ->
+          let
+            _ = Debug.log "Up" (x, y)
+          in
+          ({model | isDragging = False}, Cmd.none)
+        -- Empty msg that do
         -- Empty msg that does no operations
 
 
@@ -131,7 +146,7 @@ view model =
 
 mainView : Model -> Element FrontendMsg
 mainView model =
-  row [ spacing 24, paddingXY 40 20 ] [
+  row [ spacing 48, paddingXY 40 20 ] [
       chatView model  |> Element.html
     , conferenceRoom 502 502 model
     , roster model
@@ -153,7 +168,7 @@ roster_ model =
    renderItem (clientId, ca) =
      row [spacing 8] [
         el [width (px 30)] (text ca.handle)
-        , clientColorBar ca.color.red ca.color.green ca.color.blue
+        -- , clientColorBar ca.color.red ca.color.green ca.color.blue
      ]
  in
   column [width (px 500), height (px 500), Font.size 16, spacing 6]
@@ -172,7 +187,7 @@ clientColorBar r g b =
 
 conferenceRoom : Int -> Int  -> Model -> Element FrontendMsg
 conferenceRoom width_ height_ model =
-  column [ width (px width_), height (px height_), Border.width 1]
+  column [ width (px width_), height (px height_), Border.width 1, Background.color Style.backgroundColor]
     [renderSVGAsHtml 500 500 model.clientDict |> Element.html]
 
 renderSVGAsHtml : Int -> Int  -> ClientDict -> Html FrontendMsg
@@ -225,6 +240,7 @@ chatView model =
         , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
         , Html.p [] [Html.text (clientInfo model)]
         ]
+
 
 
 clientInfo : Model -> String

@@ -10,7 +10,8 @@ type alias FrontendModel =
     { messages : List ChatMsg
     , messageFieldContent : String
     , clientDict : ClientDict
-    , clientId : Maybe ClientId }
+    , clientId : Maybe ClientId
+    , isDragging : Bool}
 
 type alias BackendModel =
     { messages : List Message
@@ -28,6 +29,7 @@ type alias ClientAttributes =
     , y : Float
     , radius : Float
     , color : Color
+    , fontColor : Color
     , handle : String
     , clientStatus : ClientStatus
     }
@@ -42,6 +44,8 @@ type FrontendMsg
     | MessageSubmitted
     -- | Move Mouse.Event
     | SvgMsg ClientAttributes
+    | SvgDownMsg ( Float, Float )
+    | SvgUpMsg ( Float, Float )
     | Noop
 
 

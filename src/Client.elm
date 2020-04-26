@@ -5,6 +5,7 @@ import Random
 import Svg exposing (Svg)
 import Svg.Attributes
 import Html.Events.Extra.Mouse as Mouse
+import List.Extra
 
 newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
 newAttributes seed maxX maxY clientStatus =
@@ -12,18 +13,17 @@ newAttributes seed maxX maxY clientStatus =
     (handle, seed1) = map String.toUpper (word 3 seed)
     (x, seed2) = Random.step (Random.float 0 maxX) seed1
     (y, seed3) = Random.step (Random.float 0 maxY) seed2
-    (r, seed4) = Random.step (Random.float 0 1) seed3
-    (g, seed5) = Random.step (Random.float 0 1) seed4
-    (b, seed6) = Random.step (Random.float 0 1) seed5
-
+    (k, seed4) = Random.step (Random.int 0 11) seed3
+    (color, fontColor) = getColors k
   in
     ({ x  = x
     , y = y
     , radius = 20
-    , color = { red = r, green = r, blue = b}
+    , color = color
+    , fontColor = fontColor
     , handle = handle
     , clientStatus = clientStatus}
-    , seed6)
+    , seed4)
 
 
 map : (a -> a) -> (a, b) -> (a, b)
@@ -50,10 +50,26 @@ word k seed =
     |> \(a,b) -> (wordFromChars a, b )
 
 
-
-
 render : ClientAttributes -> Svg FrontendMsg
 render ca =
+  Svg.g [] [ renderCircle ca, renderHandle ca]
+
+
+
+renderHandle : ClientAttributes -> Svg FrontendMsg
+renderHandle ca =
+    Svg.text_
+        [ Svg.Attributes.width (String.fromFloat (2 * ca.radius))
+        , Svg.Attributes.height (String.fromFloat (2 * ca.radius))
+        , Svg.Attributes.x (String.fromFloat (ca.x - 13))
+        , Svg.Attributes.y (String.fromFloat (ca.y + 5))
+        , Svg.Attributes.fontSize "12px"
+        , Svg.Attributes.fill (toCssString ca.fontColor)
+        ]
+        [Svg.text ca.handle]
+
+renderCircle : ClientAttributes -> Svg FrontendMsg
+renderCircle ca =
     Svg.circle
         [ Svg.Attributes.width (String.fromFloat (2 * ca.radius))
         , Svg.Attributes.height (String.fromFloat (2 * ca.radius))
@@ -61,6 +77,8 @@ render ca =
         , Svg.Attributes.cy (String.fromFloat ca.y)
         , Svg.Attributes.r (String.fromFloat ca.radius)
         , Svg.Attributes.fill (toCssString ca.color)
+        , Svg.Attributes.stroke "black"
+        , Svg.Attributes.strokeWidth "1"
         , Mouse.onMove
            (\r ->
                 let
@@ -69,6 +87,20 @@ render ca =
                 in
                   SvgMsg { ca | x = x - 300,  y = y - 40}
             )
+        , Mouse.onDown (\r ->
+             let
+                 ( x, y ) =
+                     r.screenPos |> Debug.log "Down"
+             in
+               SvgDownMsg (x,y)
+         )
+        , Mouse.onUp (\r ->
+             let
+                 ( x, y ) =
+                     r.screenPos |> Debug.log "Up"
+             in
+               SvgUpMsg (x,y)
+         )
         ]
         []
 
@@ -104,3 +136,31 @@ toCssString color =
         ++ "%,"
         ++ String.fromFloat (pct b)
         ++ "%)"
+
+
+makeColor : Float -> Float -> Float -> Color
+makeColor r g b =
+  { red = r/100.0, green = g/100.0, blue = b/100.0}
+
+
+green = makeColor 8 196 59
+blue = makeColor 8 64 196
+violet = makeColor 121 8 196
+magenta = makeColor 196 8 171
+magenta2 = makeColor 196 8 99
+red = makeColor 196 8 8
+orange = makeColor 196 80 8
+ochre = makeColor 196 130 8
+blueGreen = makeColor 2 209 150
+cyan = makeColor 2 181 209
+black = makeColor 30 30 30
+white = makeColor 255 255 255
+
+palette = [(green, black), (blue, white), (violet, white),
+  (magenta, white), (magenta2, white), (red, white), (orange, black)
+   , (ochre, black), (blueGreen, black), (cyan, black), (black, white)]
+
+getColors : Int ->  (Color, Color)
+getColors k =
+  List.Extra.getAt (modBy (List.length palette) k) palette
+    |> Maybe.withDefault (black, white)
