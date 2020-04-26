@@ -48,6 +48,7 @@ type FrontendMsg
 type ToBackend
     = ClientJoin
     | MsgSubmitted String
+    | UpdateClientDict ClientId ClientAttributes
 
 
 type BackendMsg
@@ -60,6 +61,7 @@ type ToFrontend
     | RoomMsgReceived Message
     | FreshClientDict ClientDict
     | RegisterClientId ClientId
+    | UpdateFrontEndClientDict ClientDict
 
 
 type alias Message =

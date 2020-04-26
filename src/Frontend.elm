@@ -89,8 +89,10 @@ update msg model =
               let
                 newDict = Dict.insert clientId clientAttributes model.clientDict
               in
-                ({ model | clientDict = newDict }, Cmd.none )
+                ({ model | clientDict = newDict }, Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
         -- Empty msg that does no operations
+
+
         Noop ->
             ( model, Cmd.none )
 
@@ -114,6 +116,10 @@ updateFromBackend msg model =
 
         RegisterClientId clientId ->
             {model | clientId = Just clientId}
+
+        UpdateFrontEndClientDict newDict ->
+           { model | clientDict = newDict }
+
 
     , Cmd.batch [ scrollChatToBottom ]
     )

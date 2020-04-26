@@ -80,6 +80,12 @@ updateFromFrontend sessionId clientId msg model =
             , broadcast model.clients (RoomMsgReceived ( clientId, text ))
             )
 
+        UpdateClientDict clientId_ clientAttributes ->
+          let
+            newDict = Dict.insert clientId_ clientAttributes model.clientDict
+          in
+            ({ model | clientDict = newDict}, broadcast model.clients (UpdateFrontEndClientDict newDict))
+
 
 broadcast clients msg =
     clients
