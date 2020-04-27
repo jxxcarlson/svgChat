@@ -19,7 +19,7 @@ type alias FrontendModel =
 type alias Position = {x : Float, y: Float}
 
 type DragState
-  =
+  = Static Position
   | Moving Position
 
 
