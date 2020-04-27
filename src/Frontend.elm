@@ -97,7 +97,7 @@ update msg model =
             Nothing -> (model, Cmd.none)
             Just clientId ->
               let
-                pos = { x = clamp 20 480 pos.x, y = clamp 20 480 pos.y}
+                 pos = { x = clamp 20 480 pos_.x, y = clamp 20 480 pos_.y}
                 -- TODO: remove magic numbers
                 (clientAttributes, newDict ) = setClientPosition pos clientId model.clientDict
               in
