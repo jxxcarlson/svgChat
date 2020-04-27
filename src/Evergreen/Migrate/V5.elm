@@ -7,7 +7,7 @@ import Lamdera.Migrations exposing (..)
 
 frontendModel : Old.FrontendModel -> ModelMigration New.FrontendModel New.FrontendMsg
 frontendModel old =
-    {
+  ModelMigrated  {
       messages = []
     , messageFieldContent = ""
     , clientDict = Dict.empty
