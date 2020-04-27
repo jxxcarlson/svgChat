@@ -20,8 +20,10 @@ view model =
   , row [spacing 12] [
      userHandleInput model, joinChatButton, leaveChatButton
     ]
-  , row [spacing 12] [clearChatRoonButton]
+  , row [spacing 12] [clearChatRoonButton ]
   ]
+
+
 
 
 clearChatRoonButton =
@@ -41,6 +43,21 @@ joinChatButton =
 
 userHandleInput model  =
     TextField.make GotUserHandle model.userHandle "Handle (2-3 chars)"
+        |> TextField.withHeight 30
+        |> TextField.withWidth 80
+        |> TextField.withLabelWidth 120
+        |> TextField.toElement
+
+
+passwordInput model  =
+    TextField.make GotPassword model.password "Password"
+        |> TextField.withHeight 30
+        |> TextField.withWidth 80
+        |> TextField.withLabelWidth 120
+        |> TextField.toElement
+
+repeatedPasswordInput model  =
+    TextField.make GotRepeatedPassword model.password "Password again"
         |> TextField.withHeight 30
         |> TextField.withWidth 80
         |> TextField.withLabelWidth 120

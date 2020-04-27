@@ -1,4 +1,4 @@
-module Client exposing(newAttributes, newAttributesWithName, word, render, toCssString, decodePosition, defaultAttributes)
+module Client exposing(newAttributesWithName, word, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -11,26 +11,9 @@ import Browser.Events
 import Json.Decode as  D
 import Json.Encode as E
 
-newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
-newAttributes seed maxX maxY clientStatus =
-  let
-    (handle, seed1) = map String.toUpper (word 3 seed)
-    (x, seed2) = Random.step (Random.float 0 maxX) seed1
-    (y, seed3) = Random.step (Random.float 0 maxY) seed2
-    (k, seed4) = Random.step (Random.int 0 11) seed3
-    (color, fontColor) = getColors k
-  in
-    ({ x  = x
-    , y = y
-    , radius = 20
-    , color = color
-    , fontColor = fontColor
-    , handle = handle
-    , clientStatus = clientStatus}
-    , seed4)
 
-newAttributesWithName : Random.Seed -> Float -> Float -> ClientStatus -> String -> (ClientAttributes, Random.Seed)
-newAttributesWithName seed maxX maxY clientStatus userHandle =
+newAttributesWithName : Random.Seed -> Float -> Float -> ClientStatus -> String ->  String -> (ClientAttributes, Random.Seed)
+newAttributesWithName seed maxX maxY clientStatus userHandle passwordHash =
   let
     (x, seed1) = Random.step (Random.float 0 maxX) seed
     (y, seed2) = Random.step (Random.float 0 maxY) seed1
@@ -43,6 +26,7 @@ newAttributesWithName seed maxX maxY clientStatus userHandle =
     , color = color
     , fontColor = fontColor
     , handle = userHandle
+    , passwordHash = passwordHash
     , clientStatus = clientStatus}
     , seed3)
 
@@ -53,6 +37,7 @@ defaultAttributes =
   , color = {red =0, green = 0, blue = 0}
   , fontColor = {red =1, green = 1, blue = 1}
   , handle = "XXX"
+  , passwordHash = "XXX"
   , clientStatus = SignedOut}
 
 map : (a -> a) -> (a, b) -> (a, b)

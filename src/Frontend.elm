@@ -17,6 +17,7 @@ import View.Roster as Roster
 import View.Conference as Conference
 import View.Chat as Chat
 import View.Dashboard as Dashboard
+import Crypto.HMAC exposing (sha256, sha512)
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -67,6 +68,8 @@ init =
       , isDragging = False
       , dragState = Static { x = 50, y = 50 }
       , userHandle = "XYZ"
+      , password = ""
+      , repeatedPassword = ""
       , message = ""
     }
       , Cmd.none
@@ -114,9 +117,15 @@ update msg model =
         GotUserHandle str ->
              ( {model | userHandle = str}, Cmd.none)
 
+        GotPassword str ->
+           ({ model | password = str }, Cmd.none)
+
+        GotRepeatedPassword str ->
+           ({ model | repeatedPassword = str }, Cmd.none)
+
         JoinChat  ->
           case String.length model.userHandle > 1 of
-            True -> (model, joinChat model.userHandle)
+            True -> (model, joinChat model.userHandle model.password)
             False -> ({ model | message = "User handle must have at least 2 characters."}, Cmd.none)
 
         LeaveChat  ->
@@ -156,15 +165,19 @@ updateFromBackend msg model =
            { model | clientDict = newDict }
 
 
+
     , Cmd.batch [ scrollChatToBottom ]
     )
 
 
 -- HELPERS
 
-joinChat str =
-  Lamdera.sendToBackend (ClientJoin (String.toUpper str))
+joinChat str password =
+  Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
 
+encrypt : String -> String
+encrypt str =
+    Crypto.HMAC.digest sha512 "Fee, fie, fo fum said the green giant!" str
 
 leaveChat str =
   Lamdera.sendToBackend (ClientLeave str)

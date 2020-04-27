@@ -14,6 +14,8 @@ type alias FrontendModel =
     , isDragging : Bool
     , dragState : DragState
     , userHandle : String
+    , password : String
+    , repeatedPassword : String
     , message : String }
 
 type alias Position = {x : Float, y: Float}
@@ -42,6 +44,7 @@ type alias ClientAttributes =
     , fontColor : Color
     , handle : String
     , clientStatus : ClientStatus
+    , passwordHash : String
     }
 
 type ClientStatus = SignedIn | SignedOut
@@ -56,6 +59,8 @@ type FrontendMsg
     | DragMove Position
     | DragStop Position
     | GotUserHandle String
+    | GotPassword String
+    | GotRepeatedPassword String
     | JoinChat
     | LeaveChat
     | ClearChatRoom
@@ -63,7 +68,7 @@ type FrontendMsg
 
 
 type ToBackend
-    = ClientJoin String
+    = ClientJoin String String
     | ClientLeave String
     | InitClientDict
     | MsgSubmitted String String
