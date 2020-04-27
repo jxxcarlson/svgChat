@@ -1,26 +1,18 @@
 module View.Conference exposing(view)
 
--- import Json.Decode as D
-import Html exposing (Html)
-import Html.Attributes as HA
-import Html.Events as HE
-import Element exposing (..)
-import Element.Background as Background
+import Element exposing (Element, el, width, height, px, text, column, row, spacing, paddingXY)
 import Element.Border as Border
-import Element.Font as Font
-import Element.Input as Input
-import Lamdera exposing (ClientId)
+import Element.Background as Background
 import Style
-import Task
+import Html exposing(Html)
+import Element exposing(Element)
+import Lamdera exposing (ClientId)
 import Types exposing (..)
-import Widget.Style
 import Dict
 import Svg exposing (Svg)
 import Svg.Attributes
-import Client
--- import Html.Events.Extra.Mouse as Mouse
 import Widget.Bar
--- import Browser.Events
+import Client
 
 type alias Model = FrontendModel
 

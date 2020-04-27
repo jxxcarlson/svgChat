@@ -2,25 +2,16 @@ module Frontend exposing (Model, app)
 
 import Browser.Dom as Dom
 import Html exposing (Html)
-import Html.Attributes as HA
-import Html.Events as HE
-import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font
-import Element.Input as Input
+import Element exposing (Element, row, spacing, paddingXY, focusStyle)
 import Json.Decode as D
 import Lamdera exposing (ClientId)
-import Style
 import Task
 import Types exposing (..)
 import Widget.Style
 import Dict
 import Svg exposing (Svg)
-import Svg.Attributes
 import Client
 import Html.Events.Extra.Mouse as Mouse
-import Widget.Bar
 import Browser.Events
 import View.Roster as Roster
 import View.Conference as Conference
@@ -208,5 +199,3 @@ setClientPosition pos clientId clientDict =
             newInfo = {info | x = pos.x - 440, y = pos.y - 20 }
           in
             (newInfo, Dict.insert clientId newInfo clientDict)
-
-    

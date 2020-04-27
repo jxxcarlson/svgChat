@@ -1,27 +1,13 @@
 module View.Roster exposing(view)
---
--- import Browser.Dom as Dom
--- import Html exposing (Html)
--- import Html.Attributes as HA
--- import Html.Events as HE
-import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
+
+import Element exposing (Element, el, width, height, px, text, column, row, spacing, paddingXY)
 import Element.Font as Font
-import Element.Input as Input
--- import Json.Decode as D
 import Lamdera exposing (ClientId)
-import Style
-import Task
 import Types exposing (..)
-import Widget.Style
 import Dict
 import Svg exposing (Svg)
 import Svg.Attributes
--- import Client
--- import Html.Events.Extra.Mouse as Mouse
 import Widget.Bar
--- import Browser.Events
 
 type alias Model = FrontendModel
 
