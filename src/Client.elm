@@ -20,8 +20,8 @@ newAttributes seed maxX maxY clientStatus =
     (k, seed4) = Random.step (Random.int 0 11) seed3
     (color, fontColor) = getColors k
   in
-    ({ x  = 0
-    , y = 0
+    ({ x  = x
+    , y = y
     , radius = 20
     , color = color
     , fontColor = fontColor
