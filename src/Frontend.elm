@@ -343,7 +343,6 @@ setClientPosition pos clientId clientDict =
         Nothing -> (Client.defaultAttributes, clientDict)
         Just info ->
           let
-            _ = Debug.log "(x,y)" (pos.x, pos.y)
             newInfo = {info | x = pos.x - 440, y = pos.y - 20 }
           in
             (newInfo, Dict.insert clientId newInfo clientDict)
