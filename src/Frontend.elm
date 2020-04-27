@@ -1,7 +1,6 @@
 module Frontend exposing (Model, app)
 
 import Browser.Dom as Dom
-import Debug exposing (toString)
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
@@ -95,20 +94,6 @@ update msg model =
                 , scrollChatToBottom
                 ]
             )
-
-        SvgDownMsg ->
-          let
-            _ = Debug.log "Down"
-          in
-          ({model | isDragging = True}, Cmd.none)
-
-        SvgUpMsg  ->
-          let
-            _ = Debug.log "Up"
-          in
-          ({model | isDragging = False}, Cmd.none)
-        -- Empty msg that do
-        -- Empty msg that does no operations
 
         DragStart ->
              ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )

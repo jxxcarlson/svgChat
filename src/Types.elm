@@ -50,8 +50,6 @@ type alias Color = {red: Float, green : Float, blue: Float}
 type FrontendMsg
     = MessageFieldChanged String
     | MessageSubmitted
-    | SvgDownMsg
-    | SvgUpMsg
     | DragStart
     | DragMove Position
     | DragStop Position

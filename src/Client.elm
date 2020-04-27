@@ -92,10 +92,7 @@ renderCircle ca =
         , Svg.Attributes.fill (toCssString ca.color)
         , Svg.Attributes.stroke "black"
         , Svg.Attributes.strokeWidth "1"
-
         , Svg.Events.onMouseDown DragStart
-
-        , Svg.Events.onMouseUp  SvgUpMsg
 
         ]
         []
