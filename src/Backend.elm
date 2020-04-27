@@ -63,8 +63,8 @@ updateFromFrontend sessionId clientId msg model =
                         -- |> List.reverse -- Que? Is this a bug?
                         |> List.map RoomMsgReceived
                         |> List.map (Lamdera.sendToFrontend clientId)
-                        |> (\list -> (Lamdera.sendToFrontend clientId (FreshClientDict newClientDict))::list)
-                        |> (\list -> (Lamdera.sendToFrontend clientId (RegisterClientId clientId))::list)
+                        -- |> (\list -> (Lamdera.sendToFrontend clientId (FreshClientDict newClientDict))::list)
+                        |> (\list -> (Lamdera.sendToFrontend clientId (RegisterClientId clientId newClientDict))::list)
                         |> Cmd.batch
             in
             ( newModel

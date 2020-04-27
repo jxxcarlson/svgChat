@@ -11,7 +11,15 @@ type alias FrontendModel =
     , messageFieldContent : String
     , clientDict : ClientDict
     , clientId : Maybe ClientId
-    , isDragging : Bool}
+    , isDragging : Bool
+    , dragState : DragState }
+
+type alias Position = {x : Float, y: Float}
+
+type DragState
+  = Static Position
+  | Moving Position
+
 
 type alias BackendModel =
     { messages : List Message
@@ -42,10 +50,11 @@ type alias Color = {red: Float, green : Float, blue: Float}
 type FrontendMsg
     = MessageFieldChanged String
     | MessageSubmitted
-    -- | Move Mouse.Event
-    | SvgMsg ClientAttributes
-    | SvgDownMsg ( Float, Float )
-    | SvgUpMsg ( Float, Float )
+    | SvgDownMsg
+    | SvgUpMsg
+    | DragStart
+    | DragMove Position
+    | DragStop Position
     | Noop
 
 
@@ -64,7 +73,7 @@ type ToFrontend
     | ClientTimeoutReceived ClientId
     | RoomMsgReceived Message
     | FreshClientDict ClientDict
-    | RegisterClientId ClientId
+    | RegisterClientId ClientId ClientDict
     | UpdateFrontEndClientDict ClientDict
 
 

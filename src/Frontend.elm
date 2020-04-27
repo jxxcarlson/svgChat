@@ -22,6 +22,7 @@ import Svg.Attributes
 import Client
 import Html.Events.Extra.Mouse as Mouse
 import Widget.Bar
+import Browser.Events
 
 
 
@@ -41,7 +42,7 @@ app =
                 { title = "Lamdera chat demo"
                 , body = [ view model ]
                 }
-        , subscriptions = \m -> Sub.none
+        , subscriptions = subscriptions
         , onUrlChange = \_ -> Noop
         , onUrlRequest = \_ -> Noop
         }
@@ -49,6 +50,16 @@ app =
 
 type alias Model =
     FrontendModel
+
+subscriptions model = case model.dragState of
+    Static _ ->
+      Sub.none
+
+    Moving _  ->
+      Sub.batch
+        [ Browser.Events.onMouseMove (D.map DragMove Client.decodePosition)
+        , Browser.Events.onMouseUp ( D.map DragStop Client.decodePosition)
+        ]
 
 
 init : ( Model, Cmd FrontendMsg )
@@ -61,6 +72,7 @@ init =
       , clientDict = Dict.empty
       , clientId = Nothing
       , isDragging = False
+      , dragState = Static { x = 50, y = 50 }
     }
       , Lamdera.sendToBackend ClientJoin )
 
@@ -83,30 +95,37 @@ update msg model =
                 , scrollChatToBottom
                 ]
             )
-        SvgMsg clientAttributes ->
-          case (model.clientId, model.isDragging) of
-            (Nothing, _) ->  (model, Cmd.none)
-            (_, False) ->  (model, Cmd.none)
-            (Just clientId, True) ->
-              let
-                newDict = Dict.insert clientId clientAttributes model.clientDict
-              in
-                ({ model | clientDict = newDict }, Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
 
-        SvgDownMsg (x, y) ->
+        SvgDownMsg ->
           let
-            _ = Debug.log "Down" (x, y)
+            _ = Debug.log "Down"
           in
           ({model | isDragging = True}, Cmd.none)
 
-        SvgUpMsg (x, y) ->
+        SvgUpMsg  ->
           let
-            _ = Debug.log "Up" (x, y)
+            _ = Debug.log "Up"
           in
           ({model | isDragging = False}, Cmd.none)
         -- Empty msg that do
         -- Empty msg that does no operations
 
+        DragStart ->
+             ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )
+
+        DragMove pos->
+          case model.clientId of
+            Nothing -> (model, Cmd.none)
+            Just clientId ->
+              let
+                (clientAttributes, newDict ) = setClientPosition pos clientId model.clientDict
+              in
+                 ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
+                     , clientDict = newDict }
+                 , Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
+
+        DragStop pos ->
+             ( { model |isDragging = False, dragState = Static pos}, Cmd.none )
 
         Noop ->
             ( model, Cmd.none )
@@ -129,8 +148,11 @@ updateFromBackend msg model =
         FreshClientDict freshDict ->
            { model | clientDict = freshDict}
 
-        RegisterClientId clientId ->
-            {model | clientId = Just clientId}
+        RegisterClientId clientId freshDict   ->
+            {model | clientId = Just clientId
+                    , clientDict = freshDict
+                    , dragState = Static (clientPosition clientId freshDict)
+                  }
 
         UpdateFrontEndClientDict newDict ->
            { model | clientDict = newDict }
@@ -242,40 +264,6 @@ chatView model =
         ]
 
 
-
-clientInfo : Model -> String
-clientInfo model =
-  case model.clientId of
-    Nothing -> "---"
-    Just clientId ->
-      case Dict.get clientId model.clientDict of
-        Nothing -> "---"
-        Just info ->
-          let
-            handle = info.handle
-            x = info.x |> roundTo 1 |> String.fromFloat
-            y = info.y |> roundTo 1 |> String.fromFloat
-          in
-            handle ++ ", x: " ++ x ++ ", y: " ++ y
-
-roundTo : Int -> Float -> Float
-roundTo k x =
-  let
-    factor = 10.0 ^ (toFloat k)
-    xx = round (factor * x) |> toFloat
-  in
-   xx/factor
-
-handleOfClient : Model -> ClientId -> String
-handleOfClient model clientId =
-  let
-    info = Dict.get clientId model.clientDict
-    handle = info
-      |> Maybe.map .handle
-      |> Maybe.withDefault "AAA"
-  in
-    handle
-
 chatInput : Model -> (String -> FrontendMsg) -> Html FrontendMsg
 chatInput model msg =
     Html.input
@@ -338,3 +326,65 @@ onEnter msg =
 
 timeoutInMs =
     5 * 1000
+
+
+-- CLIENT HELPERS
+
+toPosition : DragState -> Position
+toPosition dragState =
+  case dragState of
+    Static pos -> pos
+    Moving pos -> pos
+
+clientInfo : Model -> String
+clientInfo model =
+  case model.clientId of
+    Nothing -> "---"
+    Just clientId ->
+      case Dict.get clientId model.clientDict of
+        Nothing -> "---"
+        Just info ->
+          let
+            handle = info.handle
+            x = info.x |> roundTo 1 |> String.fromFloat
+            y = info.y |> roundTo 1 |> String.fromFloat
+          in
+            handle ++ ", x: " ++ x ++ ", y: " ++ y
+
+
+setClientPosition : Position -> ClientId -> ClientDict -> (ClientAttributes, ClientDict)
+setClientPosition pos clientId clientDict =
+      case Dict.get clientId clientDict of
+        Nothing -> (Client.defaultAttributes, clientDict)
+        Just info ->
+          let
+            _ = Debug.log "(x,y)" (pos.x, pos.y)
+            newInfo = {info | x = pos.x - 440, y = pos.y - 20 }
+          in
+            (newInfo, Dict.insert clientId newInfo clientDict)
+
+
+clientPosition : ClientId -> ClientDict -> Position
+clientPosition clientId clientDict =
+      case Dict.get clientId clientDict of
+        Nothing -> { x = 50, y = 50}
+        Just info -> { x = info.x, y = info.x }
+
+
+roundTo : Int -> Float -> Float
+roundTo k x =
+  let
+    factor = 10.0 ^ (toFloat k)
+    xx = round (factor * x) |> toFloat
+  in
+   xx/factor
+
+handleOfClient : Model -> ClientId -> String
+handleOfClient model clientId =
+  let
+    info = Dict.get clientId model.clientDict
+    handle = info
+      |> Maybe.map .handle
+      |> Maybe.withDefault "AAA"
+  in
+    handle

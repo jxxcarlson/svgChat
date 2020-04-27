@@ -1,4 +1,4 @@
-module Client exposing(newAttributes, render, toCssString)
+module Client exposing(newAttributes, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -7,6 +7,9 @@ import Svg.Attributes
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra
 import Svg.Events
+import Browser.Events
+import Json.Decode as  D
+import Json.Encode as E
 
 newAttributes : Random.Seed -> Float -> Float -> ClientStatus -> (ClientAttributes, Random.Seed)
 newAttributes seed maxX maxY clientStatus =
@@ -26,6 +29,15 @@ newAttributes seed maxX maxY clientStatus =
     , clientStatus = clientStatus}
     , seed4)
 
+
+defaultAttributes =
+  { x  = 0
+  , y = 0
+  , radius = 20
+  , color = {red =0, green = 0, blue = 0}
+  , fontColor = {red =1, green = 1, blue = 1}
+  , handle = "XXX"
+  , clientStatus = SignedOut}
 
 map : (a -> a) -> (a, b) -> (a, b)
 map f (a_, b_) = (f a_, b_)
@@ -80,39 +92,20 @@ renderCircle ca =
         , Svg.Attributes.fill (toCssString ca.color)
         , Svg.Attributes.stroke "black"
         , Svg.Attributes.strokeWidth "1"
-        , Mouse.onMove
-           (\r ->
-                let
-                    ( x, y ) =
-                        r.screenPos |> Debug.log "SCREEN POS"
-                        -- r.clientPos |> Debug.log "POS"
-                    _ = r.clientPos |> Debug.log "CLIENT POS"
-                    _ = r.pagePos |> Debug.log "PAGE POS"
-                in
-                  -- SvgMsg { ca | x = x - 300,  y = y - 40}
-                  -- SvgMsg { ca | x = x , y = y }
-                  --- SvgMsg { ca | x = x - 345,  y = y - 130} |> Debug.log "SvgMsg"
-                  SvgMsg { ca | x = x - 300,  y = y - 40}
 
-            )
-        , Mouse.onDown (\r ->
-             let
-                 ( x, y ) =
-                     r.screenPos |> Debug.log "Down"
-             in
-               SvgDownMsg (x,y)
-         )
-        , Mouse.onUp (\r ->
-             let
-                 ( x, y ) =
-                     r.screenPos |> Debug.log "Up"
-             in
-               SvgUpMsg (x,y)
-         )
+        , Svg.Events.onMouseDown DragStart
+
+        , Svg.Events.onMouseUp  SvgUpMsg
+
         ]
         []
 
 
+decodePosition : D.Decoder Position
+decodePosition =
+  D.map2 Position
+    (D.field "pageX" D.float)
+    (D.field "pageY" D.float)
 
 {-| Use a faster toCssString
 Using `++` instead of `String.concat` which avh4/color uses makes this much faster.
