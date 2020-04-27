@@ -54,10 +54,19 @@ viewMessage : Model -> ChatMsg -> Html msg
 viewMessage model msg =
     case msg of
         ClientJoined clientId ->
-            Html.div [ HA.style "font-style" "italic" ] [ Html.text <| (handleOfClient model clientId) ++ " joined the chat" ]
+          case handleOfClient model clientId of
+            Nothing -> Html.div [ HA.style "font-style" "italic" ] [ Html.text "" ]
+            Just handle ->
+               Html.div [ HA.style "font-style" "italic" ] [ Html.text <| handle ++ " joined the chat" ]
 
         ClientTimedOut clientId ->
-            Html.div [ HA.style "font-style" "italic" ] [ Html.text <| (handleOfClient model clientId) ++ " left the chat" ]
+          case handleOfClient model clientId of
+            Nothing -> Html.div [ HA.style "font-style" "italic" ] [ Html.text "" ]
+            Just handle ->
+               Html.div [ HA.style "font-style" "italic" ] [ Html.text <| handle ++ " left the chat" ]
+
+        UserLeftChat userHandle ->
+            Html.div [ HA.style "font-style" "italic" ] [ Html.text <| userHandle ++ " left the chat" ]
 
         MsgReceived message ->
             Html.div [] [ Html.text <| "[" ++ message.handle ++ "]: " ++ message.content ]
@@ -111,12 +120,9 @@ roundTo k x =
   in
    xx/factor
 
-handleOfClient : Model -> ClientId -> String
+handleOfClient : Model -> ClientId -> Maybe String
 handleOfClient model clientId =
   let
     info = Dict.get clientId model.clientDict
-    handle = info
-      |> Maybe.map .handle
-      |> Maybe.withDefault "AAA"
   in
-    handle
+   Maybe.map .handle info

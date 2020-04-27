@@ -16,7 +16,13 @@ type alias FrontendModel =
     , userHandle : String
     , password : String
     , repeatedPassword : String
+    , appMode : AppMode
     , message : String }
+
+
+type AppMode = ChatMode | StartMode SignMode
+
+type SignMode = SignUpMode | SignInMode
 
 type alias Position = {x : Float, y: Float}
 
@@ -61,9 +67,13 @@ type FrontendMsg
     | GotUserHandle String
     | GotPassword String
     | GotRepeatedPassword String
+    | SignUp
     | JoinChat
     | LeaveChat
     | ClearChatRoom
+    | EnterSignUpMode
+    | EnterSignInMode
+    | EnterChatMode
     | Noop
 
 
@@ -73,6 +83,7 @@ type ToBackend
     | InitClientDict
     | MsgSubmitted String String
     | UpdateClientDict ClientId ClientAttributes
+    | CheckClientRegistration String String 
 
 
 type BackendMsg
@@ -86,6 +97,8 @@ type ToFrontend
     | FreshClientDict ClientDict
     | RegisterClientId ClientId ClientDict
     | UpdateFrontEndClientDict ClientDict
+    | HandleAvailable ClientId Bool
+
 
 
 type alias Message =
@@ -96,3 +109,4 @@ type ChatMsg
     = ClientJoined ClientId
     | ClientTimedOut ClientId
     | MsgReceived Message
+    | UserLeftChat String

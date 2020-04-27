@@ -74,7 +74,7 @@ updateFromFrontend sessionId clientId msg model =
             , Cmd.batch
                 [ sendHelloMessageToAllClients
                 , sendMessageHistoryToNewlyJoinedClient
-                , broadcast model.clients (UpdateFrontEndClientDict newClientDict)
+                , broadcast newModel.clients (UpdateFrontEndClientDict newClientDict)
                 ]
             )
 
@@ -84,7 +84,11 @@ updateFromFrontend sessionId clientId msg model =
             newClientDict_ = Dict.remove clientId model.clientDict
             newClientDict = purgeUser userHandle newClientDict_
           in
-            ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
+            ({model | clientDict = newClientDict
+              , messages = {id = clientId, handle = userHandle, content = "left the chat" } :: model.messages},
+                broadcast model.clients (UpdateFrontEndClientDict newClientDict)
+              )
+
 
 
         InitClientDict ->
@@ -105,12 +109,39 @@ updateFromFrontend sessionId clientId msg model =
           in
             ({ model | clientDict = newDict}, broadcast model.clients (UpdateFrontEndClientDict newDict))
 
+        CheckClientRegistration handle passwordHash ->
+          let
+            available = userHandleAvailable handle model.clientDict
+            (newDict , newSeed_) = case available of
+              False -> (model.clientDict, model.seed)
+              True ->
+                let
+                  (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
+                in
+                (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
+          in
+            ({ model | seed = newSeed_, clientDict = newDict}
+              , Cmd.batch [
+              --   Lamdera.sendToFrontend (HandleAvailable clientId available)
+                  broadcast model.clients (UpdateFrontEndClientDict newDict)
+                 ] )
 
 broadcast clients msg =
     clients
         |> Set.toList
         |> List.map (\clientId -> Lamdera.sendToFrontend clientId msg)
         |> Cmd.batch
+
+
+userHandleAvailable : String -> ClientDict -> Bool
+userHandleAvailable name clientDict  =
+  let
+    names = clientDict
+      |> Dict.toList
+      |> List.map (.handle << Tuple.second)
+  in
+  (List.filter (\item -> item == name)) names == []
+
 
 
 purgeUser : String -> ClientDict -> ClientDict

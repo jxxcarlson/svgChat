@@ -17,7 +17,9 @@ import View.Roster as Roster
 import View.Conference as Conference
 import View.Chat as Chat
 import View.Dashboard as Dashboard
+import View.Start as Start
 import Crypto.HMAC exposing (sha256, sha512)
+import Cmd.Extra exposing(withCmd, withCmds, withNoCmd)
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -70,10 +72,10 @@ init =
       , userHandle = "XYZ"
       , password = ""
       , repeatedPassword = ""
+      , appMode = StartMode SignInMode
       , message = ""
     }
       , Cmd.none
-      --, Lamdera.sendToBackend ClientJoin
       )
 
 
@@ -125,11 +127,25 @@ update msg model =
 
         JoinChat  ->
           case String.length model.userHandle > 1 of
-            True -> (model, joinChat model.userHandle model.password)
-            False -> ({ model | message = "User handle must have at least 2 characters."}, Cmd.none)
+            True -> ({ model | appMode = ChatMode}, joinChat model.userHandle model.password)
+            False -> ({ model |  message = "User handle must have at least 2 characters."}, Cmd.none)
+
+        SignUp ->
+          case validateSignUp model of
+            [] ->  (model, Lamdera.sendToBackend (CheckClientRegistration model.userHandle (encrypt model.password)) )
+            errors -> ({model | message = String.join "; " errors}, Cmd.none)
+
+        EnterSignUpMode ->
+          ({ model | appMode = StartMode SignUpMode}, Cmd.none)
+
+        EnterSignInMode ->
+          ({ model | appMode = StartMode SignInMode}, Cmd.none)
+
+        EnterChatMode ->
+          ({ model | appMode = ChatMode}, Cmd.none)
 
         LeaveChat  ->
-          (model,  leaveChat model.userHandle)
+          ({ model | clientId = Nothing, appMode = StartMode SignInMode},  leaveChat model.userHandle)
 
         ClearChatRoom ->
           (model, clearChatRoom)
@@ -138,36 +154,65 @@ update msg model =
             ( model, Cmd.none )
 
 
+validateSignUp : Model -> List String
+validateSignUp model =
+  []
+    |> passWordsMatch model.password model.repeatedPassword
+    |> handleInRange model.userHandle
+
+
+
+handleInRange : String -> List String -> List String
+handleInRange passwd strings =
+  if String.length passwd < 2 then
+    "handle needs at least two characters" :: strings
+  else if String.length passwd > 3 then
+    strings
+  else
+    "passwords don't match" :: strings
+
+passWordsMatch : String -> String -> List String -> List String
+passWordsMatch p1 p2 strings =
+  if p1 == p2 then strings else
+    "passwords don't match" :: strings
+
 {-| This is the added update function. It handles all messages that can arrive from the backend.
 -}
 updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
 updateFromBackend msg model =
-    ( case msg of
+    case msg of
         ClientJoinReceived clientId ->
             { model | messages = ClientJoined clientId :: model.messages }
+             |> withCmd scrollChatToBottom
 
         RoomMsgReceived msgReceived ->
             { model | messages = MsgReceived msgReceived :: model.messages }
+             |> withCmd scrollChatToBottom
 
         ClientTimeoutReceived clientId ->
             { model | messages = ClientTimedOut clientId :: model.messages }
+             |> withCmd scrollChatToBottom
 
         FreshClientDict freshDict ->
-           { model | clientDict = freshDict}
+           { model | clientDict = freshDict}  |> withNoCmd
 
         RegisterClientId clientId freshDict   ->
             {model | clientId = Just clientId
                     , clientDict = freshDict
                     , dragState = Static (clientPosition clientId freshDict)
-                  }
+                  } |> withNoCmd
 
         UpdateFrontEndClientDict newDict ->
-           { model | clientDict = newDict }
+           { model | clientDict = newDict } |> withNoCmd
+
+
+        HandleAvailable clientId isAvailable ->
+          case isAvailable of
+            False -> { model | message = "Not available"} |> withNoCmd
+            True -> { model | appMode = ChatMode } |> withNoCmd
 
 
 
-    , Cmd.batch [ scrollChatToBottom ]
-    )
 
 
 -- HELPERS
@@ -195,8 +240,15 @@ view model =
    Element.layoutWith { options =
         [ focusStyle Widget.Style.noFocus ] } [] (mainView model)
 
+
 mainView : Model -> Element FrontendMsg
 mainView model =
+  case model.appMode of
+    StartMode _ -> Start.view model
+    ChatMode -> chatView model
+
+chatView : Model -> Element FrontendMsg
+chatView model =
   row [ spacing 48, paddingXY 40 20 ] [
       column [spacing 12] [
          Chat.view model  |> Element.html
