@@ -17,10 +17,17 @@ view : Model -> Element FrontendMsg
 view model =
   column [spacing 12] [
     el [Font.bold, Font.size 24] (Element.text "Dashboard")
-  , userHandleInput model
-  , joinChatButton
+  , row [spacing 12] [
+     userHandleInput model, joinChatButton, leaveChatButton
+    ]
   ]
 
+
+leaveChatButton =
+    Button.make LeaveChat "Leave chat"
+        |> Button.withWidth (Bounded 100)
+        -- |> Button.withSelected False
+        |> Button.toElement
 
 joinChatButton =
     Button.make JoinChat "Join chat"

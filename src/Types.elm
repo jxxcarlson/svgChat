@@ -57,11 +57,13 @@ type FrontendMsg
     | DragStop Position
     | GotUserHandle String
     | JoinChat
+    | LeaveChat
     | Noop
 
 
 type ToBackend
     = ClientJoin String
+    | ClientLeave String
     | MsgSubmitted String
     | UpdateClientDict ClientId ClientAttributes
 

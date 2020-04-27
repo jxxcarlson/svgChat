@@ -75,6 +75,13 @@ updateFromFrontend sessionId clientId msg model =
                 ]
             )
 
+
+        ClientLeave userHandle ->
+          let
+            newClientDict = Dict.remove clientId model.clientDict
+          in
+            ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
+
         -- A client has sent us a new message! Add it to our messages list, and broadcast it to everyone.
         MsgSubmitted text ->
             ( { model | messages = ( clientId, text ) :: model.messages }

@@ -76,6 +76,9 @@ init =
 joinChat str =
   Lamdera.sendToBackend (ClientJoin (String.toUpper str))
 
+
+leaveChat str =
+  Lamdera.sendToBackend (ClientLeave str)
 {-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
 -}
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
@@ -121,6 +124,10 @@ update msg model =
           case String.length model.userHandle > 1 of
             True -> (model, joinChat model.userHandle)
             False -> ({ model | message = "User handle must have at least 2 characters."}, Cmd.none)
+
+        LeaveChat  ->
+          (model,  leaveChat model.userHandle)
+
         Noop ->
             ( model, Cmd.none )
 
