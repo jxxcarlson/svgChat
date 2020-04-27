@@ -92,11 +92,13 @@ update msg model =
         DragStart ->
              ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )
 
-        DragMove pos->
+        DragMove pos_->
           case model.clientId of
             Nothing -> (model, Cmd.none)
             Just clientId ->
               let
+                pos = { x = clamp 20 480 pos.x, y = clamp 20 480 pos.y}
+                -- TODO: remove magic numbers
                 (clientAttributes, newDict ) = setClientPosition pos clientId model.clientDict
               in
                  ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
