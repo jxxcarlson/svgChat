@@ -1,13 +1,15 @@
 module Evergreen.Migrate.V5 exposing (..)
 
 import Evergreen.V1.Types as Old
-import Evergreen.V5.Types as New
+import Evergreen.V5.Types as New exposing(DragState(..), Position)
 import Lamdera.Migrations exposing (..)
+import Dict
+import Set
 
 
 frontendModel : Old.FrontendModel -> ModelMigration New.FrontendModel New.FrontendMsg
 frontendModel old =
-  ModelMigrated  {
+  ModelMigrated ( {
       messages = []
     , messageFieldContent = ""
     , clientDict = Dict.empty
@@ -16,23 +18,38 @@ frontendModel old =
     , dragState = Static {x = 50, y = 50}
     , userHandle = "---"
     , message = ""
-     }
+     }, Cmd.none)
 
 
 backendModel : Old.BackendModel -> ModelMigration New.BackendModel New.BackendMsg
 backendModel old =
-    old.ClientJoin -> MsgOldValueIgnored
+  ModelMigrated ( {
+        messages = []
+       , clients = Set.empty
+       , clientDict = Dict.empty
+       , seed = old.seed
+    }, Cmd.none)
+
 
 
 frontendMsg : Old.FrontendMsg -> MsgMigration New.FrontendMsg New.FrontendMsg
 frontendMsg old =
-    old.GotUserHandle -> MsgOldValueIgnored
-    old.JoinChat -> MsgOldValueIgnored
+    case old of
+       Old.MessageFieldChanged str -> MsgUnchanged
+       Old.MessageSubmitted -> MsgUnchanged
+       Old.DragStart -> MsgUnchanged
+       Old.DragMove _ -> MsgUnchanged
+       Old.DragStop _ -> MsgUnchanged
+       Old.Noop -> MsgUnchanged
+
 
 
 toBackend : Old.ToBackend -> MsgMigration New.ToBackend New.BackendMsg
 toBackend old =
-    Unimplemented
+    case old of
+       Old.ClientJoin -> MsgOldValueIgnored
+       Old.MsgSubmitted _ -> MsgOldValueIgnored
+       Old.UpdateClientDict _ _ -> MsgOldValueIgnored
 
 
 backendMsg : Old.BackendMsg -> MsgMigration New.BackendMsg New.BackendMsg
