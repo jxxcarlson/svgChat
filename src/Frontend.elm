@@ -92,16 +92,16 @@ update msg model =
         DragStart ->
              ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )
 
-        DragMove pos_->
+        DragMove pos->
           case model.clientId of
             Nothing -> (model, Cmd.none)
             Just clientId ->
               let
-                 pos = { x = clamp 20 480 pos_.x, y = clamp 20 480 pos_.y}
+                pos_ = { x = clamp 20 480 pos.x, y = clamp 20 480 pos.y}
                 -- TODO: remove magic numbers
-                (clientAttributes, newDict ) = setClientPosition pos clientId model.clientDict
+                (clientAttributes, newDict ) = setClientPosition pos_ clientId model.clientDict
               in
-                 ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
+                 ( { model | dragState = if model.isDragging then Moving pos_ else Static (toPosition model.dragState)
                      , clientDict = newDict }
                  , Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
 
