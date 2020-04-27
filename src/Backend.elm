@@ -78,7 +78,8 @@ updateFromFrontend sessionId clientId msg model =
 
         ClientLeave userHandle ->
           let
-            newClientDict = Dict.remove clientId model.clientDict
+            newClientDict_ = Dict.remove clientId model.clientDict
+            newClientDict = purgeClientDictionary (findClientIdByHandle userHandle newClientDict_) newClientDict_
           in
             ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
 
@@ -88,7 +89,7 @@ updateFromFrontend sessionId clientId msg model =
               newClientDict = Dict.empty
             in
               ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
-              
+
         -- A client has sent us a new message! Add it to our messages list, and broadcast it to everyone.
         MsgSubmitted text ->
             ( { model | messages = ( clientId, text ) :: model.messages }
@@ -107,3 +108,13 @@ broadcast clients msg =
         |> Set.toList
         |> List.map (\clientId -> Lamdera.sendToFrontend clientId msg)
         |> Cmd.batch
+
+
+findClientIdByHandle : String -> ClientDict -> List ClientId
+findClientIdByHandle handle clientDict =
+    List.filter (\(id, clientAttributes) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
+    |> List.map Tuple.first
+
+purgeClientDictionary : List ClientId -> ClientDict -> ClientDict
+purgeClientDictionary clientList clientDict =
+  List.foldl(\id dict -> Dict.remove id dict) clientDict clientList
