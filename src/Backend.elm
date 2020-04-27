@@ -47,7 +47,9 @@ updateFromFrontend sessionId clientId msg model =
             let
                 (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed  500 500 SignedIn userHandle
 
-                newClientDict = Dict.insert clientId newClientAttributes model.clientDict
+                newClientDict_ = purgeUser userHandle model.clientDict
+
+                newClientDict = Dict.insert clientId newClientAttributes newClientDict_
 
                 newModel =
                     { model | clients = Set.insert clientId model.clients
@@ -79,7 +81,7 @@ updateFromFrontend sessionId clientId msg model =
         ClientLeave userHandle ->
           let
             newClientDict_ = Dict.remove clientId model.clientDict
-            newClientDict = purgeClientDictionary (findClientIdByHandle userHandle newClientDict_) newClientDict_
+            newClientDict = purgeUser userHandle newClientDict_
           in
             ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
 
@@ -109,6 +111,10 @@ broadcast clients msg =
         |> List.map (\clientId -> Lamdera.sendToFrontend clientId msg)
         |> Cmd.batch
 
+
+purgeUser : String -> ClientDict -> ClientDict
+purgeUser userHandle clientDict =
+  purgeClientDictionary (findClientIdByHandle userHandle clientDict) clientDict
 
 findClientIdByHandle : String -> ClientDict -> List ClientId
 findClientIdByHandle handle clientDict =
