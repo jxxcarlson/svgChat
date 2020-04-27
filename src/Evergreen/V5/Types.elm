@@ -12,7 +12,7 @@ type ChatMsg
     | MsgReceived Lamdera.ClientId String
 
 
-type alias Color = 
+type alias Color =
     { red : Float
     , green : Float
     , blue : Float
@@ -24,7 +24,7 @@ type ClientStatus
     | SignedOut
 
 
-type alias ClientAttributes = 
+type alias ClientAttributes =
     { x : Float
     , y : Float
     , radius : Float
@@ -38,7 +38,7 @@ type alias ClientAttributes =
 type alias ClientDict = (Dict.Dict Lamdera.ClientId ClientAttributes)
 
 
-type alias Position = 
+type alias Position =
     { x : Float
     , y : Float
     }
