@@ -20,19 +20,23 @@ view model =
   , row [spacing 12] [
      userHandleInput model, joinChatButton, leaveChatButton
     ]
+  , row [spacing 12] [clearChatRoonButton]
   ]
 
+
+clearChatRoonButton =
+    Button.make ClearChatRoom "Clear chat room"
+        |> Button.withWidth (Bounded 120)
+        |> Button.toElement
 
 leaveChatButton =
     Button.make LeaveChat "Leave chat"
         |> Button.withWidth (Bounded 100)
-        -- |> Button.withSelected False
         |> Button.toElement
 
 joinChatButton =
     Button.make JoinChat "Join chat"
         |> Button.withWidth (Bounded 100)
-        -- |> Button.withSelected False
         |> Button.toElement
 
 userHandleInput model  =

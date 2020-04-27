@@ -81,6 +81,11 @@ leaveChat str =
   Lamdera.sendToBackend (ClientLeave str)
 {-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
 -}
+
+clearChatRoom  =
+  Lamdera.sendToBackend InitClientDict
+
+
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
 update msg model =
     case msg of
@@ -127,6 +132,9 @@ update msg model =
 
         LeaveChat  ->
           (model,  leaveChat model.userHandle)
+
+        ClearChatRoom ->
+          (model, clearChatRoom)
 
         Noop ->
             ( model, Cmd.none )

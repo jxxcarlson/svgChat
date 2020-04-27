@@ -82,6 +82,13 @@ updateFromFrontend sessionId clientId msg model =
           in
             ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
 
+
+        InitClientDict ->
+            let
+              newClientDict = Dict.empty
+            in
+              ({model | clientDict = newClientDict}, broadcast model.clients (UpdateFrontEndClientDict newClientDict))
+              
         -- A client has sent us a new message! Add it to our messages list, and broadcast it to everyone.
         MsgSubmitted text ->
             ( { model | messages = ( clientId, text ) :: model.messages }
