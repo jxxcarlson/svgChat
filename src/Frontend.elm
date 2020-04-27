@@ -2,7 +2,7 @@ module Frontend exposing (Model, app)
 
 import Browser.Dom as Dom
 import Html exposing (Html)
-import Element exposing (Element, row, spacing, paddingXY, focusStyle)
+import Element exposing (Element, row, column, spacing, paddingXY, focusStyle)
 import Json.Decode as D
 import Lamdera exposing (ClientId)
 import Task
@@ -16,7 +16,7 @@ import Browser.Events
 import View.Roster as Roster
 import View.Conference as Conference
 import View.Chat as Chat
-
+import View.Dashboard as Dashboard
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -66,9 +66,15 @@ init =
       , clientId = Nothing
       , isDragging = False
       , dragState = Static { x = 50, y = 50 }
+      , userHandle = "XYZ"
+      , message = ""
     }
-      , Lamdera.sendToBackend ClientJoin )
+      , Cmd.none
+      --, Lamdera.sendToBackend ClientJoin
+      )
 
+joinChat str =
+  Lamdera.sendToBackend (ClientJoin (String.toUpper str))
 
 {-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
 -}
@@ -108,6 +114,13 @@ update msg model =
         DragStop pos ->
              ( { model |isDragging = False, dragState = Static pos}, Cmd.none )
 
+        GotUserHandle str ->
+             ( {model | userHandle = str}, Cmd.none)
+
+        JoinChat  ->
+          case String.length model.userHandle > 1 of
+            True -> (model, joinChat model.userHandle)
+            False -> ({ model | message = "User handle must have at least 2 characters."}, Cmd.none)
         Noop ->
             ( model, Cmd.none )
 
@@ -150,7 +163,10 @@ view model =
 mainView : Model -> Element FrontendMsg
 mainView model =
   row [ spacing 48, paddingXY 40 20 ] [
-      Chat.view model  |> Element.html
+      column [spacing 12] [
+         Chat.view model  |> Element.html
+       , Dashboard.view model
+      ]
     , Conference.view 502 502 model
     , Roster.view model
 

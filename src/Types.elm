@@ -12,7 +12,9 @@ type alias FrontendModel =
     , clientDict : ClientDict
     , clientId : Maybe ClientId
     , isDragging : Bool
-    , dragState : DragState }
+    , dragState : DragState
+    , userHandle : String
+    , message : String }
 
 type alias Position = {x : Float, y: Float}
 
@@ -53,11 +55,13 @@ type FrontendMsg
     | DragStart
     | DragMove Position
     | DragStop Position
+    | GotUserHandle String
+    | JoinChat
     | Noop
 
 
 type ToBackend
-    = ClientJoin
+    = ClientJoin String
     | MsgSubmitted String
     | UpdateClientDict ClientId ClientAttributes
 

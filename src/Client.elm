@@ -1,4 +1,4 @@
-module Client exposing(newAttributes, render, toCssString, decodePosition, defaultAttributes)
+module Client exposing(newAttributes, newAttributesWithName, word, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -21,7 +21,7 @@ newAttributes seed maxX maxY clientStatus =
     (color, fontColor) = getColors k
   in
     ({ x  = x
-    , y = y  
+    , y = y
     , radius = 20
     , color = color
     , fontColor = fontColor
@@ -29,6 +29,22 @@ newAttributes seed maxX maxY clientStatus =
     , clientStatus = clientStatus}
     , seed4)
 
+newAttributesWithName : Random.Seed -> Float -> Float -> ClientStatus -> String -> (ClientAttributes, Random.Seed)
+newAttributesWithName seed maxX maxY clientStatus userHandle =
+  let
+    (x, seed1) = Random.step (Random.float 0 maxX) seed
+    (y, seed2) = Random.step (Random.float 0 maxY) seed1
+    (k, seed3) = Random.step (Random.int 0 11) seed2
+    (color, fontColor) = getColors k
+  in
+    ({ x  = x
+    , y = y
+    , radius = 20
+    , color = color
+    , fontColor = fontColor
+    , handle = userHandle
+    , clientStatus = clientStatus}
+    , seed3)
 
 defaultAttributes =
   { x  = 0
@@ -71,11 +87,16 @@ render ca =
 
 renderHandle : ClientAttributes -> Svg FrontendMsg
 renderHandle ca =
+  let
+    offset = case String.length ca.handle == 2 of
+        True -> 5
+        False -> 0
+  in
     Svg.text_
         [ Svg.Attributes.width (String.fromFloat (2 * ca.radius))
         , Svg.Attributes.height (String.fromFloat (2 * ca.radius))
-        , Svg.Attributes.x (String.fromFloat (ca.x - 13))
-        , Svg.Attributes.y (String.fromFloat (ca.y + 5))
+        , Svg.Attributes.x (String.fromFloat (ca.x - 13 + offset))
+        , Svg.Attributes.y (String.fromFloat (ca.y + 5 ))
         , Svg.Attributes.fontSize "12px"
         , Svg.Attributes.fill (toCssString ca.fontColor)
         ]

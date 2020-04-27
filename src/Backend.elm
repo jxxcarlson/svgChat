@@ -43,9 +43,9 @@ updateFromFrontend : SessionId -> ClientId -> ToBackend -> Model -> ( Model, Cmd
 updateFromFrontend sessionId clientId msg model =
     case msg of
         -- A new client has joined! Add them to our clients list, and send them all messages we have so far.
-        ClientJoin ->
+        ClientJoin userHandle ->
             let
-                (newClientAttributes, newSeed) = Client.newAttributes model.seed  500 500 SignedIn
+                (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed  500 500 SignedIn userHandle
 
                 newClientDict = Dict.insert clientId newClientAttributes model.clientDict
 
