@@ -73,17 +73,6 @@ init =
       --, Lamdera.sendToBackend ClientJoin
       )
 
-joinChat str =
-  Lamdera.sendToBackend (ClientJoin (String.toUpper str))
-
-
-leaveChat str =
-  Lamdera.sendToBackend (ClientLeave str)
-{-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
--}
-
-clearChatRoom  =
-  Lamdera.sendToBackend InitClientDict
 
 
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
@@ -170,6 +159,24 @@ updateFromBackend msg model =
     , Cmd.batch [ scrollChatToBottom ]
     )
 
+
+-- HELPERS
+
+joinChat str =
+  Lamdera.sendToBackend (ClientJoin (String.toUpper str))
+
+
+leaveChat str =
+  Lamdera.sendToBackend (ClientLeave str)
+{-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
+-}
+
+clearChatRoom  =
+  Lamdera.sendToBackend InitClientDict
+
+
+-- VIEW
+
 view : Model -> Html FrontendMsg
 view model =
    Element.layoutWith { options =
@@ -229,6 +236,6 @@ setClientPosition pos clientId clientDict =
         Nothing -> (Client.defaultAttributes, clientDict)
         Just info ->
           let
-            newInfo = {info | x = pos.x - 440, y = pos.y - 20 }
+            newInfo = {info | x = pos.x - 510, y = pos.y - 70 } -- 440, 20
           in
             (newInfo, Dict.insert clientId newInfo clientDict)
