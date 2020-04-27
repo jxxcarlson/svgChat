@@ -71,6 +71,7 @@ updateFromFrontend sessionId clientId msg model =
             , Cmd.batch
                 [ sendHelloMessageToAllClients
                 , sendMessageHistoryToNewlyJoinedClient
+                , broadcast model.clients (UpdateFrontEndClientDict newClientDict)
                 ]
             )
 
