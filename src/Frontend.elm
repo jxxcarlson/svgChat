@@ -86,7 +86,7 @@ update msg model =
         MessageSubmitted ->
             ( { model | messageFieldContent = "", messages = model.messages }
             , Cmd.batch
-                [ Lamdera.sendToBackend (MsgSubmitted model.messageFieldContent)
+                [ Lamdera.sendToBackend (MsgSubmitted model.userHandle model.messageFieldContent)
                 , focusOnMessageInputField
                 , scrollChatToBottom
                 ]
@@ -137,8 +137,8 @@ updateFromBackend msg model =
         ClientJoinReceived clientId ->
             { model | messages = ClientJoined clientId :: model.messages }
 
-        RoomMsgReceived ( clientId, text ) ->
-            { model | messages = MsgReceived clientId text :: model.messages }
+        RoomMsgReceived msgReceived ->
+            { model | messages = MsgReceived msgReceived :: model.messages }
 
         ClientTimeoutReceived clientId ->
             { model | messages = ClientTimedOut clientId :: model.messages }

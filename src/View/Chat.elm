@@ -1,7 +1,6 @@
 module View.Chat exposing(view)
 
 
-import Browser.Dom as Dom
 import Json.Decode as D
 import Html exposing (Html)
 import Html.Attributes as HA
@@ -60,8 +59,8 @@ viewMessage model msg =
         ClientTimedOut clientId ->
             Html.div [ HA.style "font-style" "italic" ] [ Html.text <| (handleOfClient model clientId) ++ " left the chat" ]
 
-        MsgReceived clientId message ->
-            Html.div [] [ Html.text <| "[" ++ (handleOfClient model clientId) ++ "]: " ++ message ]
+        MsgReceived message ->
+            Html.div [] [ Html.text <| "[" ++ message.handle ++ "]: " ++ message.content ]
 
 
 fontStyles : List (Html.Attribute msg)

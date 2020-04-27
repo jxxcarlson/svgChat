@@ -66,7 +66,7 @@ type ToBackend
     = ClientJoin String
     | ClientLeave String
     | InitClientDict
-    | MsgSubmitted String
+    | MsgSubmitted String String
     | UpdateClientDict ClientId ClientAttributes
 
 
@@ -84,10 +84,10 @@ type ToFrontend
 
 
 type alias Message =
-    ( String, String )
+  { id : ClientId, handle: String, content: String }
 
 
 type ChatMsg
     = ClientJoined ClientId
     | ClientTimedOut ClientId
-    | MsgReceived ClientId String
+    | MsgReceived Message
