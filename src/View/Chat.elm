@@ -25,7 +25,7 @@ type alias Model = FrontendModel
 view : Model -> Element FrontendMsg
 view model =
   column [alignTop ] [
-    column [height (px 500), width (px 300), scrollbarY, spacing 8, paddingXY 12 18
+    column [ setId "message-box", height (px 500), width (px 300), scrollbarY, spacing 8, paddingXY 12 18
       , Font.size 14, Background.color Style.paleGreen]
     (model.messages
       |> List.reverse
@@ -35,6 +35,8 @@ view model =
  ]
 
 
+setId id =
+  Element.htmlAttribute (HA.id id)
 
 chatInput : Model -> (String -> FrontendMsg) -> Element FrontendMsg
 chatInput model msg =
