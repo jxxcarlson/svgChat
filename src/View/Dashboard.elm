@@ -45,7 +45,7 @@ clientColorBar model =
 
 clientInfo : Model -> String
 clientInfo model =
-      case Debug.log "User Info" (Dict.get model.userHandle model.clientDict) of
+      case Dict.get model.userHandle model.clientDict of
         Nothing -> "---"
         Just info ->
           let
