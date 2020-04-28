@@ -32,6 +32,7 @@ roster_ model =
   column [width (px 500), height (px 500), Font.size 16, spacing 6]
     (model.clientDict
       |> Dict.toList
+      |> List.sortBy (\(id, ca) -> ca.handle)
       |> List.map renderItem)
 
 
