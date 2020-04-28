@@ -44,45 +44,49 @@ updateFromFrontend sessionId clientId msg model =
     case msg of
         -- A new client has joined! Add them to our clients list, and send them all messages we have so far.
         ClientJoin userHandle passwordHash ->
-            let
-                (newClientAttributes, newSeed) =
-                  Client.newAttributesWithName model.seed  500 500 SignedIn userHandle passwordHash
+          case userIsValid userHandle passwordHash model.clientDict of
+            False -> (model, Lamdera.sendToFrontend clientId AuthenticationFailure)
+            True ->
+              case findClientDataByHandle userHandle model.clientDict of
+                Nothing -> (model, Lamdera.sendToFrontend clientId AuthenticationFailure)
+                Just (clientId_, clientAttributes) ->
+                  let
 
-                newClientDict_ = purgeUser userHandle model.clientDict
+                      newClientAttributes =
+                        {clientAttributes | clientStatus = SignedIn }
 
-                newClientDict = Dict.insert clientId newClientAttributes newClientDict_
+                      dict1 = Dict.remove clientId_ model.clientDict
+                      dict2 = Dict.insert clientId newClientAttributes dict1
 
-                newModel =
-                    { model | clients = Set.insert clientId model.clients
-                              , clientDict =  newClientDict
-                              , seed = newSeed
-                     }
+                      newModel =
+                        { model | clients = Set.insert clientId model.clients
+                                  , clientDict =  dict2
 
-                sendHelloMessageToAllClients =
-                    broadcast newModel.clients (ClientJoinReceived clientId)
+                         }
 
-                sendMessageHistoryToNewlyJoinedClient =
-                    model.messages
-                        -- |> List.reverse -- Que? Is this a bug?
-                        |> List.map RoomMsgReceived
-                        |> List.map (Lamdera.sendToFrontend clientId)
-                        -- |> (\list -> (Lamdera.sendToFrontend clientId (FreshClientDict newClientDict))::list)
-                        |> (\list -> (Lamdera.sendToFrontend clientId (RegisterClientId clientId newClientDict))::list)
-                        |> Cmd.batch
-            in
-            ( newModel
-            , Cmd.batch
-                [ sendHelloMessageToAllClients
-                , sendMessageHistoryToNewlyJoinedClient
-                , broadcast newModel.clients (UpdateFrontEndClientDict newClientDict)
-                ]
-            )
+                      sendHelloMessageToAllClients =
+                        broadcast newModel.clients (ClientJoinReceived clientId)
+
+                      sendMessageHistoryToNewlyJoinedClient =
+                        model.messages
+                            -- |> List.reverse -- Que? Is this a bug?
+                            |> List.map RoomMsgReceived
+                            |> List.map (Lamdera.sendToFrontend clientId)
+                            |> Cmd.batch
+                  in
+                    ( newModel
+                    , Cmd.batch
+                        [ sendHelloMessageToAllClients
+                        , sendMessageHistoryToNewlyJoinedClient
+                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId dict2)
+                        , broadcast newModel.clients (UpdateFrontEndClientDict dict2)
+                        ]
+                    )
 
 
         ClientLeave userHandle ->
           let
-            newClientDict_ = Dict.remove clientId model.clientDict
-            newClientDict = purgeUser userHandle newClientDict_
+            newClientDict = setStatus SignedOut clientId model.clientDict
           in
             ({model | clientDict = newClientDict
               , messages = {id = clientId, handle = userHandle, content = "left the chat" } :: model.messages},
@@ -111,7 +115,7 @@ updateFromFrontend sessionId clientId msg model =
 
         CheckClientRegistration handle passwordHash ->
           let
-            available = userHandleAvailable handle model.clientDict
+            available = Debug.log "AVAIL" (userHandleAvailable handle model.clientDict)
             (newDict , newSeed_) = case available of
               False -> (model.clientDict, model.seed)
               True ->
@@ -119,11 +123,13 @@ updateFromFrontend sessionId clientId msg model =
                   (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
                 in
                 (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
+            _ = Debug.log "NEW DICT" newDict
           in
             ({ model | seed = newSeed_, clientDict = newDict}
               , Cmd.batch [
-              --   Lamdera.sendToFrontend (HandleAvailable clientId available)
-                  broadcast model.clients (UpdateFrontEndClientDict newDict)
+                    Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
+                    , Lamdera.sendToFrontend clientId (RegisterClientId clientId newDict)
+                  , broadcast model.clients (UpdateFrontEndClientDict newDict)
                  ] )
 
 broadcast clients msg =
@@ -132,6 +138,16 @@ broadcast clients msg =
         |> List.map (\clientId -> Lamdera.sendToFrontend clientId msg)
         |> Cmd.batch
 
+
+setStatus : ClientStatus -> ClientId -> ClientDict -> ClientDict
+setStatus clientStatus clientId clientDict =
+  case Dict.get clientId clientDict of
+    Nothing -> clientDict
+    Just attributes ->
+      let
+        newAttributes = { attributes | clientStatus = clientStatus }
+      in
+        Dict.insert clientId newAttributes clientDict
 
 userHandleAvailable : String -> ClientDict -> Bool
 userHandleAvailable name clientDict  =
@@ -143,16 +159,35 @@ userHandleAvailable name clientDict  =
   (List.filter (\item -> item == name)) names == []
 
 
+userIsValid : String -> String -> ClientDict -> Bool
+userIsValid userHandle passwordHash clientDict =
+  let
+    id = findClientIdByHandle userHandle clientDict
+
+    _ = Debug.log "DICT" clientDict
+
+    _ = Debug.log "PHASH" passwordHash
+  in
+  case Dict.get id clientDict of
+    Nothing -> False
+    Just attributes -> Debug.log "PHASH (D)" attributes.passwordHash == passwordHash
 
 purgeUser : String -> ClientDict -> ClientDict
 purgeUser userHandle clientDict =
   purgeClientDictionary (findClientIdByHandle userHandle clientDict) clientDict
 
-findClientIdByHandle : String -> ClientDict -> List ClientId
+findClientIdByHandle : String -> ClientDict -> ClientId
 findClientIdByHandle handle clientDict =
     List.filter (\(id, clientAttributes) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
     |> List.map Tuple.first
+    |> List.head
+    |> Maybe.withDefault "INVALID"
 
-purgeClientDictionary : List ClientId -> ClientDict -> ClientDict
-purgeClientDictionary clientList clientDict =
-  List.foldl(\id dict -> Dict.remove id dict) clientDict clientList
+findClientDataByHandle : String -> ClientDict -> Maybe (ClientId, ClientAttributes)
+findClientDataByHandle handle clientDict =
+    List.filter (\(id, clientAttributes) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
+    |> List.head
+
+purgeClientDictionary : ClientId -> ClientDict -> ClientDict
+purgeClientDictionary clientId clientDict =
+  Dict.remove clientId  clientDict

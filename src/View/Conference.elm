@@ -35,7 +35,9 @@ renderAsSvg : Int -> Int -> ClientDict -> Svg FrontendMsg
 renderAsSvg width  height clientDict =
     let
        entities = Dict.toList clientDict
-         |> List.map (Tuple.second >> Client.render)
+         |> List.map Tuple.second
+         |> List.filter (\attr -> attr.clientStatus == SignedIn)
+         |> List.map Client.render
          |> List.foldr (::) []
 
        br : Svg FrontendMsg

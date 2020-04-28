@@ -126,9 +126,7 @@ update msg model =
            ({ model | repeatedPassword = str }, Cmd.none)
 
         JoinChat  ->
-          case String.length model.userHandle > 1 of
-            True -> ({ model | appMode = ChatMode}, joinChat model.userHandle model.password)
-            False -> ({ model |  message = "User handle must have at least 2 characters."}, Cmd.none)
+          (model,  joinChat model.userHandle (encrypt model.password))
 
         SignUp ->
           case validateSignUp model of
@@ -157,7 +155,7 @@ update msg model =
 validateSignUp : Model -> List String
 validateSignUp model =
   []
-    |> passWordsMatch model.password model.repeatedPassword
+    |> passWordsMatch (Debug.log "P1"model.password) (Debug.log "P2" model.repeatedPassword)
     |> handleInRange model.userHandle
 
 
@@ -166,14 +164,16 @@ handleInRange : String -> List String -> List String
 handleInRange passwd strings =
   if String.length passwd < 2 then
     "handle needs at least two characters" :: strings
-  else if String.length passwd > 3 then
-    strings
+  else if String.length passwd > 4 then
+   "handle must be shorter than 4" :: strings
   else
-    "passwords don't match" :: strings
+    strings
 
 passWordsMatch : String -> String -> List String -> List String
 passWordsMatch p1 p2 strings =
-  if p1 == p2 then strings else
+  if (Debug.log "MATCH" (p1 == p2)) then
+      strings
+  else
     "passwords don't match" :: strings
 
 {-| This is the added update function. It handles all messages that can arrive from the backend.
@@ -199,6 +199,7 @@ updateFromBackend msg model =
         RegisterClientId clientId freshDict   ->
             {model | clientId = Just clientId
                     , clientDict = freshDict
+                    , appMode = ChatMode
                     , dragState = Static (clientPosition clientId freshDict)
                   } |> withNoCmd
 
@@ -207,11 +208,15 @@ updateFromBackend msg model =
 
 
         HandleAvailable clientId isAvailable ->
+          let
+            _ = Debug.log "Ha AVAIL (clientId, isAvailable)" (clientId, isAvailable)
+          in
           case isAvailable of
             False -> { model | message = "Not available"} |> withNoCmd
             True -> { model | appMode = ChatMode } |> withNoCmd
 
-
+        AuthenticationFailure ->
+          { model | message = "No match"} |> withNoCmd
 
 
 

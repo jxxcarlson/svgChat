@@ -83,7 +83,7 @@ type ToBackend
     | InitClientDict
     | MsgSubmitted String String
     | UpdateClientDict ClientId ClientAttributes
-    | CheckClientRegistration String String 
+    | CheckClientRegistration String String
 
 
 type BackendMsg
@@ -98,6 +98,7 @@ type ToFrontend
     | RegisterClientId ClientId ClientDict
     | UpdateFrontEndClientDict ClientDict
     | HandleAvailable ClientId Bool
+    | AuthenticationFailure
 
 
 
