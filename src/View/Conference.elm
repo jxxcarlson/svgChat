@@ -1,6 +1,6 @@
 module View.Conference exposing(view)
 
-import Element exposing (Element, el, width, height, px, text, column, row, spacing, paddingXY)
+import Element exposing (Element, el, alignTop, width, height, px, text, column, row, spacing, paddingXY)
 import Element.Border as Border
 import Element.Background as Background
 import Style
@@ -13,13 +13,14 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Widget.Bar
 import Client
+import Config
 
 type alias Model = FrontendModel
 
 view : Int -> Int  -> Model -> Element FrontendMsg
 view width_ height_ model =
-  column [ width (px width_), height (px height_), Border.width 1, Background.color Style.backgroundColor]
-    [renderSVGAsHtml 500 500 model.clientDict |> Element.html]
+  column [ alignTop, width (px width_), height (px height_), Border.width 1, Background.color Style.backgroundColor]
+    [renderSVGAsHtml Config.playgroundWidth  Config.playgroundHeight model.clientDict |> Element.html]
 
 renderSVGAsHtml : Int -> Int  -> ClientDict -> Html FrontendMsg
 renderSVGAsHtml width height clientDict =

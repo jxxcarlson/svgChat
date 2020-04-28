@@ -5,6 +5,11 @@ import Json.Decode as D
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
+import Element exposing (Element, el, alignTop, scrollbarY, width, height, px, text, column, row, spacing, paddingXY)
+import Element.Border as Border
+import Element.Font as Font
+import Element.Background as Background
+import Style
 import Lamdera exposing (ClientId)
 import Task
 import Types exposing (..)
@@ -15,60 +20,60 @@ import Widget.Bar
 
 type alias Model = FrontendModel
 
-view : Model -> Html FrontendMsg
+
+
+view : Model -> Element FrontendMsg
 view model =
-    Html.div (HA.style "margin-top" "115px"::HA.style "background-color" "#f3fceb":: HA.style "padding" "10px" :: fontStyles)
-        [ model.messages
-            |> List.reverse
-            |> List.map (viewMessage model)
-            |> Html.div
-                [ HA.id "message-box"
-                , HA.style "height" "430px"
-                , HA.style "overflow" "auto"
-                , HA.style "margin-bottom" "15px"
-                ]
-        , chatInput model MessageFieldChanged
-        , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
-        ]
+  column [alignTop ] [
+    column [height (px 500), width (px 300), scrollbarY, spacing 8, paddingXY 12 18
+      , Font.size 14, Background.color Style.paleGreen]
+    (model.messages
+      |> List.reverse
+      |> List.map (viewMessage model)
+    )
+    ,chatInput model MessageFieldChanged
+ ]
 
 
-chatInput : Model -> (String -> FrontendMsg) -> Html FrontendMsg
+
+chatInput : Model -> (String -> FrontendMsg) -> Element FrontendMsg
 chatInput model msg =
-    Html.input
+    (Html.input
         ([ HA.id "message-input"
          , HA.type_ "text"
          , HE.onInput msg
          , onEnter MessageSubmitted
+         , HA.style "margin-top" "12px"
          , HA.placeholder model.messageFieldContent
          , HA.value model.messageFieldContent
-         , HA.style "width" "300px"
+         , HA.style "width" "292px"
          , HA.autofocus True
          ]
             ++ fontStyles
         )
-        []
+        [] )|> Element.html
 
 
-viewMessage : Model -> ChatMsg -> Html msg
+viewMessage : Model -> ChatMsg -> Element msg
 viewMessage model msg =
     case msg of
         ClientJoined clientId ->
           case handleOfClient model clientId of
-            Nothing -> Html.div [ HA.style "font-style" "italic" ] [ Html.text "" ]
+            Nothing -> Element.none
             Just handle ->
-               Html.div [ HA.style "font-style" "italic" ] [ Html.text <| handle ++ " joined the chat" ]
+              el [Font.italic] (text <| handle ++ " joined the chat")
 
         ClientTimedOut clientId ->
           case handleOfClient model clientId of
-            Nothing -> Html.div [ HA.style "font-style" "italic" ] [ Html.text "" ]
+            Nothing -> Element.none
             Just handle ->
-               Html.div [ HA.style "font-style" "italic" ] [ Html.text <| handle ++ " left the chat" ]
+              el [Font.italic] (text <| handle ++ " left the chat")
 
         UserLeftChat userHandle ->
-            Html.div [ HA.style "font-style" "italic" ] [ Html.text <| userHandle ++ " left the chat" ]
+           el [Font.italic] (text <| userHandle ++ " joined the chat")
 
         MsgReceived message ->
-            Html.div [] [ Html.text <| "[" ++ message.handle ++ "]: " ++ message.content ]
+          el [Font.italic] (text <| "[" ++ message.handle ++ "]: " ++ message.content )
 
 
 fontStyles : List (Html.Attribute msg)

@@ -25,9 +25,9 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
-  column [spacing 18, paddingXY 7 24] [
+  column [spacing 18, paddingXY 7 12] [
    row [spacing 4] [
-     el [Font.size 18, width (px 144)] (text (clientInfo model))
+     el [Font.size 18, width (px 164)] (text (clientInfo model))
      , clientColorBar model
     ]
   , row [spacing 12] [
@@ -73,10 +73,10 @@ gotoSignInButton =
 
 clearChatRoonButton =
     Button.make ClearChatRoom "Clear chat room"
-        |> Button.withWidth (Bounded 130)
+        |> Button.withWidth (Bounded 140)
         |> Button.toElement
 
 leaveChatButton =
     Button.make LeaveChat "Leave chat"
-        |> Button.withWidth (Bounded 130)
+        |> Button.withWidth (Bounded 140)
         |> Button.toElement

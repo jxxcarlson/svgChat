@@ -256,9 +256,9 @@ mainView model =
 
 chatView : Model -> Element FrontendMsg
 chatView model =
-  row [ spacing 48, paddingXY 40 20 ] [
+  row [ spacing 12, paddingXY 60 60 ] [
       column [spacing 12] [
-         Chat.view model  |> Element.html
+         Chat.view model
        , Dashboard.view model
       ]
     , Conference.view 502 502 model
