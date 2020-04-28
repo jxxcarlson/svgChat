@@ -215,6 +215,9 @@ updateFromBackend msg model =
             False -> { model | message = "Not available"} |> withNoCmd
             True -> { model | appMode = ChatMode } |> withNoCmd
 
+        SystemMessage str ->
+                  ({ model | message = str}, Cmd.none)
+
         AuthenticationFailure ->
           { model | message = "No match"} |> withNoCmd
 

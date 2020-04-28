@@ -25,10 +25,15 @@ view model =
   column [spacing 12] [
     el [Font.bold, Font.size 24] (Element.text "Dashboard")
   , row [spacing 12] [
-     leaveChatButton
+     leaveChatButton, gotoSignInButton, clearChatRoonButton
     ]
-  , row [spacing 12] [clearChatRoonButton ]
   ]
+
+
+gotoSignInButton =
+       Button.make EnterSignInMode "Sign in"
+           |> Button.withWidth (Bounded 120)
+           |> Button.toElement
 
 
 

@@ -114,24 +114,27 @@ updateFromFrontend sessionId clientId msg model =
             ({ model | clientDict = newDict}, broadcast model.clients (UpdateFrontEndClientDict newDict))
 
         CheckClientRegistration handle passwordHash ->
-          let
-            available = Debug.log "AVAIL" (userHandleAvailable handle model.clientDict)
-            (newDict , newSeed_) = case available of
-              False -> (model.clientDict, model.seed)
-              True ->
-                let
-                  (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
-                in
-                (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
-            _ = Debug.log "NEW DICT" newDict
-          in
-            ({ model | seed = newSeed_, clientDict = newDict}
-              , Cmd.batch [
-                    Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
-                    , Lamdera.sendToFrontend clientId (RegisterClientId clientId newDict)
-                  , broadcast model.clients (UpdateFrontEndClientDict newDict)
-                 ] )
-
+          case userHandleAvailable handle model.clientDict of
+            False -> (model, Lamdera.sendToFrontend clientId (SystemMessage "name not available"))
+            True ->
+              let
+                available = Debug.log "AVAIL" (userHandleAvailable handle model.clientDict)
+                (newDict , newSeed_) = case available of
+                  False -> (model.clientDict, model.seed)
+                  True ->
+                    let
+                      (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
+                    in
+                    (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
+                _ = Debug.log "NEW DICT" newDict
+              in
+                ({ model | seed = newSeed_, clientDict = newDict}
+                  , Cmd.batch [
+                        Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
+                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId newDict)
+                      , broadcast model.clients (UpdateFrontEndClientDict newDict)
+                     ] )
+---
 broadcast clients msg =
     clients
         |> Set.toList
