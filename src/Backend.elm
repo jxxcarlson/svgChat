@@ -118,7 +118,7 @@ updateFromFrontend sessionId clientId msg model =
             False -> (model, Lamdera.sendToFrontend clientId (SystemMessage "name not available"))
             True ->
               let
-                available = Debug.log "AVAIL" (userHandleAvailable handle model.clientDict)
+                available = userHandleAvailable handle model.clientDict
                 (newDict , newSeed_) = case available of
                   False -> (model.clientDict, model.seed)
                   True ->
@@ -126,7 +126,6 @@ updateFromFrontend sessionId clientId msg model =
                       (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
                     in
                     (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
-                _ = Debug.log "NEW DICT" newDict
               in
                 ({ model | seed = newSeed_, clientDict = newDict}
                   , Cmd.batch [
@@ -166,14 +165,10 @@ userIsValid : String -> String -> ClientDict -> Bool
 userIsValid userHandle passwordHash clientDict =
   let
     id = findClientIdByHandle userHandle clientDict
-
-    _ = Debug.log "DICT" clientDict
-
-    _ = Debug.log "PHASH" passwordHash
   in
   case Dict.get id clientDict of
     Nothing -> False
-    Just attributes -> Debug.log "PHASH (D)" attributes.passwordHash == passwordHash
+    Just attributes -> attributes.passwordHash == passwordHash
 
 purgeUser : String -> ClientDict -> ClientDict
 purgeUser userHandle clientDict =

@@ -99,7 +99,7 @@ type ToFrontend
     | UpdateFrontEndClientDict ClientDict
     | HandleAvailable ClientId Bool
     | AuthenticationFailure
-    | SystemMessage String 
+    | SystemMessage String
 
 
 

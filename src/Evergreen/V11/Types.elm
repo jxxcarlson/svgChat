@@ -6,7 +6,7 @@ import Random
 import Set
 
 
-type alias Message = 
+type alias Message =
     { id : Lamdera.ClientId
     , handle : String
     , content : String
@@ -19,7 +19,7 @@ type ChatMsg
     | MsgReceived Message
 
 
-type alias Color = 
+type alias Color =
     { red : Float
     , green : Float
     , blue : Float
@@ -31,7 +31,7 @@ type ClientStatus
     | SignedOut
 
 
-type alias ClientAttributes = 
+type alias ClientAttributes =
     { x : Float
     , y : Float
     , radius : Float
@@ -45,7 +45,7 @@ type alias ClientAttributes =
 type alias ClientDict = (Dict.Dict Lamdera.ClientId ClientAttributes)
 
 
-type alias Position = 
+type alias Position =
     { x : Float
     , y : Float
     }

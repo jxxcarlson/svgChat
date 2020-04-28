@@ -155,7 +155,7 @@ update msg model =
 validateSignUp : Model -> List String
 validateSignUp model =
   []
-    |> passWordsMatch (Debug.log "P1"model.password) (Debug.log "P2" model.repeatedPassword)
+    |> passWordsMatch model.password model.repeatedPassword
     |> handleInRange model.userHandle
 
 
@@ -171,7 +171,7 @@ handleInRange passwd strings =
 
 passWordsMatch : String -> String -> List String -> List String
 passWordsMatch p1 p2 strings =
-  if (Debug.log "MATCH" (p1 == p2)) then
+  if p1 == p2 then
       strings
   else
     "passwords don't match" :: strings
@@ -208,9 +208,6 @@ updateFromBackend msg model =
 
 
         HandleAvailable clientId isAvailable ->
-          let
-            _ = Debug.log "Ha AVAIL (clientId, isAvailable)" (clientId, isAvailable)
-          in
           case isAvailable of
             False -> { model | message = "Not available"} |> withNoCmd
             True -> { model | appMode = ChatMode } |> withNoCmd
