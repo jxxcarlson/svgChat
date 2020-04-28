@@ -38,7 +38,7 @@ type alias BackendModel =
     , seed : Random.Seed
      }
 
-type alias ClientDict = Dict ClientId ClientAttributes
+type alias ClientDict = Dict String ClientAttributes -- key is the user handle
 
 -- type alias SvgMessage = ClientAttributes
 
@@ -51,6 +51,7 @@ type alias ClientAttributes =
     , handle : String
     , clientStatus : ClientStatus
     , passwordHash : String
+    , clientId : Maybe ClientId
     }
 
 type ClientStatus = SignedIn | SignedOut

@@ -1,4 +1,4 @@
-module Client exposing(newAttributesWithName, colorBar, word, render, toCssString, decodePosition, defaultAttributes)
+module Client exposing(newAttributes, colorBar, word, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -12,10 +12,12 @@ import Json.Decode as  D
 import Json.Encode as E
 import Widget.Bar
 import Element exposing(Element)
+import Lamdera exposing (ClientId)
 
 
-newAttributesWithName : Random.Seed -> Float -> Float -> ClientStatus -> String ->  String -> (ClientAttributes, Random.Seed)
-newAttributesWithName seed maxX maxY clientStatus userHandle passwordHash =
+newAttributes : Random.Seed -> Float -> Float ->
+    ClientStatus -> String ->  String -> Maybe ClientId -> (ClientAttributes, Random.Seed)
+newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId =
   let
     (x, seed1) = Random.step (Random.float 0 maxX) seed
     (y, seed2) = Random.step (Random.float 0 maxY) seed1
@@ -29,7 +31,8 @@ newAttributesWithName seed maxX maxY clientStatus userHandle passwordHash =
     , fontColor = fontColor
     , handle = userHandle
     , passwordHash = passwordHash
-    , clientStatus = clientStatus}
+    , clientStatus = clientStatus
+    , clientId = clientId}
     , seed3)
 
 defaultAttributes =
@@ -40,7 +43,8 @@ defaultAttributes =
   , fontColor = {red =1, green = 1, blue = 1}
   , handle = "XXX"
   , passwordHash = "XXX"
-  , clientStatus = SignedOut}
+  , clientStatus = SignedOut
+  , clientId = Nothing}
 
 map : (a -> a) -> (a, b) -> (a, b)
 map f (a_, b_) = (f a_, b_)

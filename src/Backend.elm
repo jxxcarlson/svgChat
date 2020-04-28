@@ -114,20 +114,20 @@ updateFromFrontend sessionId clientId msg model =
             ({ model | clientDict = newDict}, broadcast model.clients (UpdateFrontEndClientDict newDict))
 
         CheckClientRegistration handle passwordHash ->
-          case userHandleAvailable handle model.clientDict of
+          -- Register new user
+          let
+            available = userHandleAvailable handle model.clientDict
+          in
+          case available of
             False -> (model, Lamdera.sendToFrontend clientId (SystemMessage "name not available"))
             True ->
               let
-                available = userHandleAvailable handle model.clientDict
-                (newDict , newSeed_) = case available of
-                  False -> (model.clientDict, model.seed)
-                  True ->
-                    let
-                      (newClientAttributes, newSeed) = Client.newAttributesWithName model.seed 500 500 SignedIn handle passwordHash
-                    in
-                    (Dict.insert clientId newClientAttributes model.clientDict, newSeed)
+                (newClientAttributes, newSeed)
+                        = Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId)
+
+                newDict = Dict.insert handle newClientAttributes model.clientDict
               in
-                ({ model | seed = newSeed_, clientDict = newDict}
+                ({ model | seed = newSeed, clientDict = newDict}
                   , Cmd.batch [
                         Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId newDict)
