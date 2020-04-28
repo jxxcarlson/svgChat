@@ -22,6 +22,7 @@ import View.Dashboard as Dashboard
 import View.Start as Start
 import Crypto.HMAC exposing (sha256, sha512)
 import Cmd.Extra exposing(withCmd, withCmds, withNoCmd)
+import Config
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -104,8 +105,6 @@ update msg model =
 
         DragMove pos->
               let
-                -- pos_ = { x = clamp 20 480 pos.x, y = clamp 20 480 pos.y}
-                -- TODO: remove magic numbers
                 (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
               in
                  ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
@@ -304,10 +303,11 @@ toPosition dragState =
 
 setClientPosition : Position -> String -> ClientDict -> (ClientAttributes, ClientDict)
 setClientPosition pos userHandle clientDict =
+      -- TODO: remove magic numbers
       case Dict.get userHandle clientDict of
         Nothing -> (Client.defaultAttributes, clientDict)
         Just info ->
           let
-            newInfo = {info | x = pos.x - 490, y = pos.y - 120 } --  x = pos.x - 510, y = pos.y - 70 440, 20
+            newInfo = {info | x = pos.x - Config.dragOffsetX, y = pos.y - Config.dragOffsetY }
           in
             (newInfo, Dict.insert userHandle newInfo clientDict)
