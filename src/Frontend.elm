@@ -308,6 +308,6 @@ setClientPosition pos userHandle clientDict =
         Nothing -> (Client.defaultAttributes, clientDict)
         Just info ->
           let
-            newInfo = {info | x = pos.x - 510, y = pos.y - 70 } -- 440, 20
+            newInfo = {info | x = pos.x - 490, y = pos.y - 120 } --  x = pos.x - 510, y = pos.y - 70 440, 20
           in
             (newInfo, Dict.insert userHandle newInfo clientDict)
