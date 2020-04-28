@@ -154,7 +154,7 @@ colorBar width r g b =
 
 makeColor : Float -> Float -> Float -> Color
 makeColor r g b =
-  { red = r/100.0, green = g/100.0, blue = b/100.0}
+  { red = r/255.0, green = g/255.0, blue = b/255.0}
 
 
 green = makeColor 8 196 59
