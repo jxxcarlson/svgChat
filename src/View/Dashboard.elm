@@ -38,20 +38,14 @@ view model =
 
 clientColorBar : Model -> Element FrontendMsg
 clientColorBar model =
-  case model.clientId of
-    Nothing -> Element.none
-    Just clientId ->
-      case Dict.get clientId model.clientDict of
+      case Dict.get model.userHandle model.clientDict of
         Nothing -> Element.none
         Just ca ->
           Client.colorBar 102 ca.color.red ca.color.green ca.color.blue
 
 clientInfo : Model -> String
 clientInfo model =
-  case model.clientId of
-    Nothing -> "---"
-    Just clientId ->
-      case Dict.get clientId model.clientDict of
+      case Debug.log "User Info" (Dict.get model.userHandle model.clientDict) of
         Nothing -> "---"
         Just info ->
           let

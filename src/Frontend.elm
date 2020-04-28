@@ -101,17 +101,14 @@ update msg model =
              ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )
 
         DragMove pos->
-          case model.clientId of
-            Nothing -> (model, Cmd.none)
-            Just clientId ->
               let
                 -- pos_ = { x = clamp 20 480 pos.x, y = clamp 20 480 pos.y}
                 -- TODO: remove magic numbers
-                (clientAttributes, newDict ) = setClientPosition pos clientId model.clientDict
+                (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
               in
                  ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
                      , clientDict = newDict }
-                 , Lamdera.sendToBackend (UpdateClientDict clientId clientAttributes) )
+                 , Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
 
         DragStop pos ->
              ( { model |isDragging = False, dragState = Static pos}, Cmd.none )
@@ -196,8 +193,11 @@ updateFromBackend msg model =
         FreshClientDict freshDict ->
            { model | clientDict = freshDict}  |> withNoCmd
 
-        RegisterClientId clientId freshDict   ->
+        RegisterClientId clientId userHandle freshDict   ->
             {model | clientId = Just clientId
+                    , userHandle = userHandle
+                    , password = ""
+                    , repeatedPassword = ""
                     , clientDict = freshDict
                     , appMode = ChatMode
                     , dragState = Static (clientPosition clientId freshDict)
@@ -300,12 +300,12 @@ toPosition dragState =
     Moving pos -> pos
 
 
-setClientPosition : Position -> ClientId -> ClientDict -> (ClientAttributes, ClientDict)
-setClientPosition pos clientId clientDict =
-      case Dict.get clientId clientDict of
+setClientPosition : Position -> String -> ClientDict -> (ClientAttributes, ClientDict)
+setClientPosition pos userHandle clientDict =
+      case Dict.get userHandle clientDict of
         Nothing -> (Client.defaultAttributes, clientDict)
         Just info ->
           let
             newInfo = {info | x = pos.x - 510, y = pos.y - 70 } -- 440, 20
           in
-            (newInfo, Dict.insert clientId newInfo clientDict)
+            (newInfo, Dict.insert userHandle newInfo clientDict)

@@ -96,7 +96,7 @@ type ToFrontend
     | ClientTimeoutReceived ClientId
     | RoomMsgReceived Message
     | FreshClientDict ClientDict
-    | RegisterClientId ClientId ClientDict
+    | RegisterClientId ClientId String ClientDict
     | UpdateFrontEndClientDict ClientDict
     | HandleAvailable ClientId Bool
     | AuthenticationFailure

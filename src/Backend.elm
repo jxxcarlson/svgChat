@@ -47,22 +47,18 @@ updateFromFrontend sessionId clientId msg model =
           case userIsValid userHandle passwordHash model.clientDict of
             False -> (model, Lamdera.sendToFrontend clientId AuthenticationFailure)
             True ->
-              case findClientDataByHandle userHandle model.clientDict of
+              case Dict.get userHandle model.clientDict of
                 Nothing -> (model, Lamdera.sendToFrontend clientId AuthenticationFailure)
-                Just (clientId_, clientAttributes) ->
+                Just clientAttributes ->
                   let
 
                       newClientAttributes =
-                        {clientAttributes | clientStatus = SignedIn }
+                        {clientAttributes | clientStatus = SignedIn, clientId = Just clientId }
 
-                      dict1 = Dict.remove clientId_ model.clientDict
-                      dict2 = Dict.insert clientId newClientAttributes dict1
+                      newClientDict = Dict.insert userHandle newClientAttributes model.clientDict
 
                       newModel =
-                        { model | clients = Set.insert clientId model.clients
-                                  , clientDict =  dict2
-
-                         }
+                        { model | clients = Set.insert clientId model.clients, clientDict =  newClientDict }
 
                       sendHelloMessageToAllClients =
                         broadcast newModel.clients (ClientJoinReceived clientId)
@@ -78,8 +74,8 @@ updateFromFrontend sessionId clientId msg model =
                     , Cmd.batch
                         [ sendHelloMessageToAllClients
                         , sendMessageHistoryToNewlyJoinedClient
-                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId dict2)
-                        , broadcast newModel.clients (UpdateFrontEndClientDict dict2)
+                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId userHandle newClientDict)
+                        , broadcast newModel.clients (UpdateFrontEndClientDict newClientDict)
                         ]
                     )
 
@@ -130,7 +126,7 @@ updateFromFrontend sessionId clientId msg model =
                 ({ model | seed = newSeed, clientDict = newDict}
                   , Cmd.batch [
                         Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
-                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId newDict)
+                        , Lamdera.sendToFrontend clientId (RegisterClientId clientId handle newDict)
                       , broadcast model.clients (UpdateFrontEndClientDict newDict)
                      ] )
 ---
