@@ -25,7 +25,7 @@ roster_ model =
  let
    renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
    renderItem (clientId, ca) =
-     row [spacing 8] [
+     row [spacing 8, fontColor ca] [
         el [width (px 25)] (text ca.handle)
         , el [width (px 88)] (Client.colorBar 60 ca.color.red ca.color.green ca.color.blue)
         , status ca
@@ -37,6 +37,11 @@ roster_ model =
       |> List.sortBy (\(id, ca) -> ca.handle)
       |> List.map renderItem)
 
+
+fontColor ca =
+  case ca.clientStatus of
+    SignedOut -> Font.color Style.gray
+    SignedIn -> Font.color Style.black
 
 status : ClientAttributes -> Element FrontendMsg
 status ca =
