@@ -5,7 +5,7 @@ import Json.Decode as D
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
-import Element exposing (Element, el, alignTop, scrollbarY, width, height, px, text, column, row, spacing, paddingXY)
+import Element exposing (Element, el, alignTop, scrollbarY, clipX, width, height, px, text, column, row, spacing, paddingXY)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Background as Background
@@ -25,7 +25,7 @@ type alias Model = FrontendModel
 view : Model -> Element FrontendMsg
 view model =
   column [alignTop ] [
-    column [ setId "message-box", height (px 500), width (px 300), scrollbarY, spacing 8, paddingXY 12 18
+    column [ setId "message-box", height (px 500), width (px 300), scrollbarY, clipX, spacing 8, paddingXY 12 18
       , Font.size 14, Background.color Style.paleGreen]
     (model.messages
       |> List.reverse
