@@ -82,7 +82,7 @@ updateFromFrontend sessionId clientId msg model =
 
         ClientLeave userHandle ->
           let
-            newClientDict = setStatus SignedOut clientId model.clientDict
+            newClientDict = setStatus SignedOut userHandle model.clientDict
           in
             ({model | clientDict = newClientDict
               , messages = {id = clientId, handle = userHandle, content = "left the chat" } :: model.messages},
@@ -137,15 +137,15 @@ broadcast clients msg =
         |> Cmd.batch
 
 
-setStatus : ClientStatus -> ClientId -> ClientDict -> ClientDict
-setStatus clientStatus clientId clientDict =
-  case Dict.get clientId clientDict of
+setStatus : ClientStatus -> String -> ClientDict -> ClientDict
+setStatus clientStatus userHandle clientDict =
+  case Dict.get userHandle clientDict of
     Nothing -> clientDict
     Just attributes ->
       let
         newAttributes = { attributes | clientStatus = clientStatus }
       in
-        Dict.insert clientId newAttributes clientDict
+        Dict.insert userHandle newAttributes clientDict
 
 userHandleAvailable : String -> ClientDict -> Bool
 userHandleAvailable name clientDict  =

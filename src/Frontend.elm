@@ -143,7 +143,7 @@ update msg model =
           ({ model | clientId = Nothing, appMode = StartMode SignInMode},  leaveChat model.userHandle)
 
         ClearChatRoom ->
-          (model, clearChatRoom)
+          ({model | appMode = StartMode SignInMode}, clearChatRoom)
 
         Noop ->
             ( model, Cmd.none )

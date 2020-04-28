@@ -9,6 +9,7 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Widget.Bar
 import Client
+import Style
 
 type alias Model = FrontendModel
 
@@ -41,7 +42,7 @@ status : ClientAttributes -> Element FrontendMsg
 status ca =
   case ca.clientStatus of
     SignedIn ->  el [Font.bold ] (text "here")
-    SignedOut ->  el [] (text "away")
+    SignedOut ->  el [Font.color Style.gray] (text "away")
 
 clientColorBar : Float -> Float -> Float -> Element FrontendMsg
 clientColorBar r g b =
