@@ -1,4 +1,4 @@
-module Client exposing(newAttributesWithName, word, render, toCssString, decodePosition, defaultAttributes)
+module Client exposing(newAttributesWithName, colorBar, word, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -10,6 +10,8 @@ import Svg.Events
 import Browser.Events
 import Json.Decode as  D
 import Json.Encode as E
+import Widget.Bar
+import Element exposing(Element)
 
 
 newAttributesWithName : Random.Seed -> Float -> Float -> ClientStatus -> String ->  String -> (ClientAttributes, Random.Seed)
@@ -141,6 +143,14 @@ toCssString color =
         ++ String.fromFloat (pct b)
         ++ "%)"
 
+colorBar : Float ->  Float -> Float -> Float -> Element FrontendMsg
+colorBar width r g b =
+  Widget.Bar.make 80
+     |> Widget.Bar.withRGB r g b
+     |> Widget.Bar.horizontal
+     |> Widget.Bar.withSize width
+     |> Widget.Bar.withThickness 20
+     |> Widget.Bar.toElement
 
 makeColor : Float -> Float -> Float -> Color
 makeColor r g b =

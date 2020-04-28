@@ -10,6 +10,8 @@ import Svg.Attributes
 import Widget.Button as Button exposing(Size(..))
 import Widget.TextField as TextField
 import Widget.Bar
+import Client
+
 
 
 type alias Model = FrontendModel
@@ -33,14 +35,6 @@ view model =
    ]
   ]
 
-clientColorBar_ : Float -> Float -> Float -> Element FrontendMsg
-clientColorBar_ r g b =
-  Widget.Bar.make 80
-     |> Widget.Bar.withRGB r g b
-     |> Widget.Bar.horizontal
-     |> Widget.Bar.withSize 102
-     |> Widget.Bar.withThickness 20
-     |> Widget.Bar.toElement
 
 clientColorBar : Model -> Element FrontendMsg
 clientColorBar model =
@@ -50,7 +44,7 @@ clientColorBar model =
       case Dict.get clientId model.clientDict of
         Nothing -> Element.none
         Just ca ->
-          clientColorBar_ ca.color.red ca.color.green ca.color.blue
+          Client.colorBar 102 ca.color.red ca.color.green ca.color.blue
 
 clientInfo : Model -> String
 clientInfo model =

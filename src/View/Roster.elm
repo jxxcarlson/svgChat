@@ -8,6 +8,7 @@ import Dict
 import Svg exposing (Svg)
 import Svg.Attributes
 import Widget.Bar
+import Client
 
 type alias Model = FrontendModel
 
@@ -24,8 +25,8 @@ roster_ model =
    renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
    renderItem (clientId, ca) =
      row [spacing 8] [
-        el [width (px 30)] (text ca.handle)
-        , el [width (px 80)] (clientColorBar ca.color.red ca.color.green ca.color.blue)
+        el [width (px 25)] (text ca.handle)
+        , el [width (px 88)] (Client.colorBar 60 ca.color.red ca.color.green ca.color.blue)
         , status ca
      ]
  in
