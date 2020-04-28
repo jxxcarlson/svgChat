@@ -62,8 +62,8 @@ clientInfo model =
         Just info ->
           let
             handle = info.handle
-            x = info.x |> roundTo 1 |> String.fromFloat
-            y = info.y |> roundTo 1 |> String.fromFloat
+            x = info.x |> roundTo 0 |> String.fromFloat
+            y = info.y |> roundTo 0 |> String.fromFloat
           in
             handle ++ ", x: " ++ x ++ ", y: " ++ y
 

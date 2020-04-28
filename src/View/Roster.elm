@@ -25,13 +25,21 @@ roster_ model =
    renderItem (clientId, ca) =
      row [spacing 8] [
         el [width (px 30)] (text ca.handle)
-        , clientColorBar ca.color.red ca.color.green ca.color.blue
+        , el [width (px 80)] (clientColorBar ca.color.red ca.color.green ca.color.blue)
+        , status ca
      ]
  in
   column [width (px 500), height (px 500), Font.size 16, spacing 6]
     (model.clientDict
       |> Dict.toList
       |> List.map renderItem)
+
+
+status : ClientAttributes -> Element FrontendMsg
+status ca =
+  case ca.clientStatus of
+    SignedIn ->  el [Font.bold ] (text "here")
+    SignedOut ->  el [] (text "away")
 
 clientColorBar : Float -> Float -> Float -> Element FrontendMsg
 clientColorBar r g b =
