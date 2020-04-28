@@ -25,7 +25,7 @@ roster_ model =
    renderItem (clientId, ca) =
      row [spacing 8] [
         el [width (px 30)] (text ca.handle)
-        -- , clientColorBar ca.color.red ca.color.green ca.color.blue
+        , clientColorBar ca.color.red ca.color.green ca.color.blue
      ]
  in
   column [width (px 500), height (px 500), Font.size 16, spacing 6]

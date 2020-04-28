@@ -29,7 +29,6 @@ view model =
                 ]
         , chatInput model MessageFieldChanged
         , Html.button (HE.onClick MessageSubmitted :: fontStyles) [ Html.text "Send" ]
-        , Html.p [] [Html.text (clientInfo model)]
         ]
 
 
@@ -93,21 +92,6 @@ onEnter msg =
 
 -- CLIENT HELPERS
 
-
-clientInfo : Model -> String
-clientInfo model =
-  case model.clientId of
-    Nothing -> "---"
-    Just clientId ->
-      case Dict.get clientId model.clientDict of
-        Nothing -> "---"
-        Just info ->
-          let
-            handle = info.handle
-            x = info.x |> roundTo 1 |> String.fromFloat
-            y = info.y |> roundTo 1 |> String.fromFloat
-          in
-            handle ++ ", x: " ++ x ++ ", y: " ++ y
 
 
 

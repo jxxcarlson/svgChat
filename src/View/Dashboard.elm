@@ -9,6 +9,7 @@ import Svg exposing (Svg)
 import Svg.Attributes
 import Widget.Button as Button exposing(Size(..))
 import Widget.TextField as TextField
+import Widget.Bar
 
 
 type alias Model = FrontendModel
@@ -22,13 +23,58 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
-  column [spacing 12] [
-    el [Font.bold, Font.size 24] (Element.text "Dashboard")
-  , row [spacing 12] [
-     leaveChatButton, gotoSignInButton, clearChatRoonButton
+  column [spacing 18, paddingXY 7 24] [
+   row [spacing 4] [
+     el [Font.size 18, width (px 144)] (text (clientInfo model))
+     , clientColorBar model
     ]
+  , row [spacing 12] [
+     leaveChatButton, clearChatRoonButton
+   ]
   ]
 
+clientColorBar_ : Float -> Float -> Float -> Element FrontendMsg
+clientColorBar_ r g b =
+  Widget.Bar.make 80
+     |> Widget.Bar.withRGB r g b
+     |> Widget.Bar.horizontal
+     |> Widget.Bar.withSize 102
+     |> Widget.Bar.withThickness 20
+     |> Widget.Bar.toElement
+
+clientColorBar : Model -> Element FrontendMsg
+clientColorBar model =
+  case model.clientId of
+    Nothing -> Element.none
+    Just clientId ->
+      case Dict.get clientId model.clientDict of
+        Nothing -> Element.none
+        Just ca ->
+          clientColorBar_ ca.color.red ca.color.green ca.color.blue
+
+clientInfo : Model -> String
+clientInfo model =
+  case model.clientId of
+    Nothing -> "---"
+    Just clientId ->
+      case Dict.get clientId model.clientDict of
+        Nothing -> "---"
+        Just info ->
+          let
+            handle = info.handle
+            x = info.x |> roundTo 1 |> String.fromFloat
+            y = info.y |> roundTo 1 |> String.fromFloat
+          in
+            handle ++ ", x: " ++ x ++ ", y: " ++ y
+
+
+roundTo : Int -> Float -> Float
+roundTo k x =
+  let
+    factor = 10.0 ^ (toFloat k)
+    xx = round (factor * x) |> toFloat
+  in
+   xx/factor
 
 gotoSignInButton =
        Button.make EnterSignInMode "Sign in"
@@ -39,10 +85,10 @@ gotoSignInButton =
 
 clearChatRoonButton =
     Button.make ClearChatRoom "Clear chat room"
-        |> Button.withWidth (Bounded 120)
+        |> Button.withWidth (Bounded 130)
         |> Button.toElement
 
 leaveChatButton =
     Button.make LeaveChat "Leave chat"
-        |> Button.withWidth (Bounded 100)
+        |> Button.withWidth (Bounded 130)
         |> Button.toElement
