@@ -17,13 +17,13 @@ type alias Model = FrontendModel
 
 view : Model -> Html FrontendMsg
 view model =
-    Html.div (HA.style "padding" "10px" :: fontStyles)
+    Html.div (HA.style "margin-top" "115px"::HA.style "background-color" "#f3fceb":: HA.style "padding" "10px" :: fontStyles)
         [ model.messages
             |> List.reverse
             |> List.map (viewMessage model)
             |> Html.div
                 [ HA.id "message-box"
-                , HA.style "height" "400px"
+                , HA.style "height" "430px"
                 , HA.style "overflow" "auto"
                 , HA.style "margin-bottom" "15px"
                 ]
@@ -92,17 +92,6 @@ onEnter msg =
 
 -- CLIENT HELPERS
 
-
-
-
-
-roundTo : Int -> Float -> Float
-roundTo k x =
-  let
-    factor = 10.0 ^ (toFloat k)
-    xx = round (factor * x) |> toFloat
-  in
-   xx/factor
 
 handleOfClient : Model -> ClientId -> Maybe String
 handleOfClient model clientId =

@@ -1,4 +1,5 @@
-module Style exposing(darkRed, gray, darkBlue, lightBlue, black,ochre, backgroundColor)
+module Style exposing(darkRed, floralWhite, paleGreen,
+     mediumGray, lightGray, warmMediumGray, gray, darkBlue, lightBlue, black,ochre, backgroundColor)
 
 import Element
 
@@ -15,3 +16,18 @@ black = Element.rgb255 0 0 0
 ochre = Element.rgb255 235 174 52
 
 gray = Element.rgb255 150 150 150
+
+floralWhite = Element.rgb255 255 250 240
+
+makeGray g = Element.rgb g g g
+
+paleGreen = Element.rgb255 243 252 235
+
+warmMediumGray = Element.rgb 0.7 0.7 0.7
+-- Element.rgb 0.92 0.89 0.85
+--
+-- warmMediumGray = Element.rgb 0.87 0.84 0.8
+
+mediumGray = makeGray 0.8
+
+lightGray = makeGray 0.925

@@ -3,6 +3,8 @@ module Frontend exposing (Model, app)
 import Browser.Dom as Dom
 import Html exposing (Html)
 import Element exposing (Element, row, column, spacing, paddingXY, focusStyle)
+import Element.Background as Background
+import Style
 import Json.Decode as D
 import Lamdera exposing (ClientId)
 import Task
@@ -243,7 +245,7 @@ clearChatRoom  =
 view : Model -> Html FrontendMsg
 view model =
    Element.layoutWith { options =
-        [ focusStyle Widget.Style.noFocus ] } [] (mainView model)
+        [ focusStyle Widget.Style.noFocus ] } [ Background.color Style.warmMediumGray] (mainView model)
 
 
 mainView : Model -> Element FrontendMsg

@@ -1,7 +1,8 @@
 module View.Roster exposing(view)
 
-import Element exposing (Element, el, width, height, px, text, column, row, spacing, paddingXY)
+import Element exposing (Element, el, width, height, scrollbarY, clipX, px, text, column, row, spacing, padding, paddingXY)
 import Element.Font as Font
+import Element.Background as Background
 import Lamdera exposing (ClientId)
 import Types exposing (..)
 import Dict
@@ -15,7 +16,7 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
-  column [spacing 12] [
+  column [spacing 12, width (px 320), scrollbarY,  clipX, padding 40, height (px 500), Background.color Style.paleGreen] [
     el [Font.bold, Font.size 24] (Element.text "Roster")
     , roster_ model
   ]
