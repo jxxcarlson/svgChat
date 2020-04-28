@@ -60,20 +60,20 @@ updateFromFrontend sessionId clientId msg model =
                       newModel =
                         { model | clients = Set.insert clientId model.clients, clientDict =  newClientDict }
 
-                      sendHelloMessageToAllClients =
-                        broadcast newModel.clients (ClientJoinReceived clientId)
+                      -- sendHelloMessageToAllClients =
+                      --   broadcast newModel.clients (ClientJoinReceived clientId)
 
-                      sendMessageHistoryToNewlyJoinedClient =
-                        model.messages
-                            -- |> List.reverse -- Que? Is this a bug?
-                            |> List.map RoomMsgReceived
-                            |> List.map (Lamdera.sendToFrontend clientId)
-                            |> Cmd.batch
+                      -- sendMessageHistoryToNewlyJoinedClient =
+                      --   model.messages
+                      --       -- |> List.reverse -- Que? Is this a bug?
+                      --       |> List.map RoomMsgReceived
+                      --       |> List.map (Lamdera.sendToFrontend clientId)
+                      --       |> Cmd.batch
                   in
                     ( newModel
                     , Cmd.batch
-                        [ sendHelloMessageToAllClients
-                        , sendMessageHistoryToNewlyJoinedClient
+                        [ sendHelloMessageToAllClients newModel.clients clientId
+                        , sendMessageHistoryToNewlyJoinedClient model.messages clientId
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId userHandle newClientDict)
                         , broadcast newModel.clients (UpdateFrontEndClientDict newClientDict)
                         ]
@@ -122,14 +122,29 @@ updateFromFrontend sessionId clientId msg model =
                         = Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId)
 
                 newDict = Dict.insert handle newClientAttributes model.clientDict
+                newModel = { model | seed = newSeed, clientDict = newDict}
               in
-                ({ model | seed = newSeed, clientDict = newDict}
+                ( newModel
                   , Cmd.batch [
-                        Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
+                          sendHelloMessageToAllClients newModel.clients clientId
+                        , sendMessageHistoryToNewlyJoinedClient model.messages clientId
+                        , Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId handle newDict)
                       , broadcast model.clients (UpdateFrontEndClientDict newDict)
                      ] )
----
+
+
+sendHelloMessageToAllClients clients clientId =
+    broadcast clients (ClientJoinReceived clientId)
+
+
+sendMessageHistoryToNewlyJoinedClient messages clientId =
+  messages
+      -- |> List.reverse -- Que? Is this a bug?
+      |> List.map RoomMsgReceived
+      |> List.map (Lamdera.sendToFrontend clientId)
+      |> Cmd.batch
+
 broadcast clients msg =
     clients
         |> Set.toList
