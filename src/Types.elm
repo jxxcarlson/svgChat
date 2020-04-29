@@ -36,6 +36,7 @@ type alias BackendModel =
     { messages : List Message
     , clients : Set ClientId
     , clientDict : ClientDict
+    , currentTime : Posix
     , seed : Random.Seed
      }
 
@@ -91,6 +92,7 @@ type ToBackend
 
 type BackendMsg
     = BNoop
+    | Tick Posix
 
 
 type ToFrontend

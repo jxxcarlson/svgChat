@@ -7,6 +7,10 @@ import Types exposing (..)
 import Dict
 import Random
 import Client
+import Time
+import Cmd.Extra exposing(withCmd, withCmds, withNoCmd)
+import Config
+
 
 
 
@@ -14,7 +18,7 @@ app =
     Lamdera.backend
         { init = init
         , update = update
-        , subscriptions = \m -> Sub.none
+        , subscriptions = subscriptions
         , updateFromFrontend = updateFromFrontend
         }
 
@@ -28,15 +32,24 @@ init =
     ( { messages = []
     , clients = Set.empty
     , clientDict = Dict.empty
-    , seed = Random.initialSeed 123499115}
+    , seed = Random.initialSeed 123499115
+    , currentTime = Time.millisToPosix 0 }
     , Cmd.none )
 
+
+subscriptions model =
+  Time.every Config.tickInterval Tick
 
 update : BackendMsg -> Model -> ( Model, Cmd BackendMsg )
 update msg model =
     case msg of
         BNoop ->
             ( model, Cmd.none )
+
+        Tick currentTime ->
+          { model | currentTime = currentTime } |> withNoCmd
+
+
 
 
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> Model -> ( Model, Cmd BackendMsg )
@@ -60,15 +73,6 @@ updateFromFrontend sessionId clientId msg model =
                       newModel =
                         { model | clients = Set.insert clientId model.clients, clientDict =  newClientDict }
 
-                      -- sendHelloMessageToAllClients =
-                      --   broadcast newModel.clients (ClientJoinReceived clientId)
-
-                      -- sendMessageHistoryToNewlyJoinedClient =
-                      --   model.messages
-                      --       -- |> List.reverse -- Que? Is this a bug?
-                      --       |> List.map RoomMsgReceived
-                      --       |> List.map (Lamdera.sendToFrontend clientId)
-                      --       |> Cmd.batch
                   in
                     ( newModel
                     , Cmd.batch
@@ -133,6 +137,9 @@ updateFromFrontend sessionId clientId msg model =
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId handle newDict)
                       , broadcast model.clients (UpdateFrontEndClientDict newDict)
                      ] )
+
+
+-- HELPERS
 
 
 sendHelloMessageToAllClients clients clientId =
