@@ -115,7 +115,7 @@ update msg model =
              ( { model |isDragging = False, dragState = Static pos}, Cmd.none )
 
         GotUserHandle str ->
-             ( {model | userHandle = str}, Cmd.none)
+             ( {model | userHandle = String.toUpper str}, Cmd.none)
 
         GotPassword str ->
            ({ model | password = str }, Cmd.none)

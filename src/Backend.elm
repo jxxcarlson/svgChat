@@ -136,7 +136,7 @@ updateFromFrontend sessionId clientId msg model =
                         , sendMessageHistoryToNewlyJoinedClient newModel.messages clientId
                         , Lamdera.sendToFrontend clientId (HandleAvailable clientId available)
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId handle newDict)
-                      , broadcast model.clients (UpdateFrontEndClientDict newDict)
+                      , broadcast newModel.clients (UpdateFrontEndClientDict newDict)
                      ] )
 
 

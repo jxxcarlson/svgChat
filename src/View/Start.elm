@@ -12,6 +12,7 @@ import Svg.Attributes
 import Widget.Button as Button exposing(Size(..))
 import Widget.TextField as TextField exposing(LabelPosition(..))
 import Style
+import Config
 
 
 type alias Model = FrontendModel
@@ -19,8 +20,9 @@ type alias Model = FrontendModel
 view : Model -> Element FrontendMsg
 view model =
   column [width fill, height fill, Background.color Style.black ] [
-     column [centerX, centerY, width (px 500), height (px 500), Background.color Style.ochre] [
+     column [centerX, centerY, width (px Config.playgroundWidth), height (px Config.playgroundWidth), Background.color Style.ochre] [
         signInUpModel model
+    , el [paddingXY 32 8, Font.size 16, Font.italic] (text "Username: 2 to 4 characters, all caps.")
      ]
   ]
 
