@@ -19,7 +19,7 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
-  column [alignTop, spacing 12, width (px 420), scrollbarY,  clipX, padding 40, height (px 500), Background.color Style.paleGreen] [
+  column [alignTop, spacing 12, width (px 380), scrollbarY,  clipX, paddingXY 20 20, height (px 500), Background.color Style.paleGreen] [
     el [Font.bold, Font.size 24] (Element.text "Roster")
     , roster_ model
   ]
@@ -33,7 +33,6 @@ roster_ model =
         el [width (px 25)] (text ca.handle)
         , el [width (px 88)] (Client.colorBar 60 ca.color.red ca.color.green ca.color.blue)
         , status ca
-        , timeSignedIn ca
      ]
  in
   column [width (px Config.playgroundWidth), height (px Config.playgroundWidth), Font.size 16, spacing 6]
@@ -51,12 +50,9 @@ fontColor ca =
 status : ClientAttributes -> Element FrontendMsg
 status ca =
   case ca.clientStatus of
-    SignedIn ->  el [] (text "here since")
+    SignedIn ->  el [] (text ("here since " ++ (toUtcString ca.signInTime)))
     SignedOut ->  el [Font.color Style.gray] (text "away")
 
-timeSignedIn : ClientAttributes -> Element FrontendMsg
-timeSignedIn ca =
-  el [] (text (toUtcString ca.signInTime))
 
 
 toUtcString : Time.Posix -> String

@@ -123,8 +123,9 @@ updateFromFrontend sessionId clientId msg model =
             False -> (model, Lamdera.sendToFrontend clientId (SystemMessage "name not available"))
             True ->
               let
+                 --  signInTime = model.currentTime
                 (newClientAttributes, newSeed)
-                        = Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId)
+                        = Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId) model.currentTime
 
                 newDict = Dict.insert handle newClientAttributes model.clientDict
                 newModel = { model | seed = newSeed, clientDict = newDict}

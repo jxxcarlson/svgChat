@@ -13,12 +13,12 @@ import Json.Encode as E
 import Widget.Bar
 import Element exposing(Element)
 import Lamdera exposing (ClientId)
-import Time
+import Time exposing(Posix)
 
 
 newAttributes : Random.Seed -> Float -> Float ->
-    ClientStatus -> String ->  String -> Maybe ClientId -> (ClientAttributes, Random.Seed)
-newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId =
+    ClientStatus -> String ->  String -> Maybe ClientId -> Posix -> (ClientAttributes, Random.Seed)
+newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId time =
   let
     (x, seed1) = Random.step (Random.float 0 maxX) seed
     (y, seed2) = Random.step (Random.float 0 maxY) seed1
@@ -33,7 +33,7 @@ newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId =
     , handle = userHandle
     , passwordHash = passwordHash
     , clientStatus = clientStatus
-    , signInTime = Time.millisToPosix 0
+    , signInTime = time
     , clientId = clientId}
     , seed3)
 
