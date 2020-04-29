@@ -19,7 +19,7 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
-  column [alignTop, spacing 12, width (px 380), scrollbarY,  clipX, paddingXY 20 20, height (px 500), Background.color Style.paleGreen] [
+  column [alignTop, spacing 12, width (px 320), scrollbarY,  clipX, paddingXY 30 30, height (px 500), Background.color Style.paleGreen] [
     el [Font.bold, Font.size 24] (Element.text "Roster")
     , roster_ model
   ]
@@ -60,9 +60,7 @@ toUtcString time =
   (String.fromInt (toHour utc time) |> String.padLeft 2 '0')
   ++ ":" ++
   (String.fromInt (toMinute utc time) |> String.padLeft 2 '0')
-  ++ ":" ++
-  (String.fromInt (toSecond utc time) |> String.padLeft 2 '0')
-  ++ " (UTC)"
+
 
 
 clientColorBar : Float -> Float -> Float -> Element FrontendMsg
