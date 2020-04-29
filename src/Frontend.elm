@@ -156,8 +156,8 @@ update msg model =
         LeaveChat  ->
           ({ model | clientId = Nothing, appMode = StartMode SignInMode},  leaveChat model.userHandle)
 
-        ClearChatRoom ->
-          ({model | appMode = StartMode SignInMode}, clearChatRoom)
+        DeleteMe ->
+          ({model | appMode = StartMode SignInMode}, deleteMe model.userHandle)
 
         Noop ->
             ( model, Cmd.none )
@@ -256,8 +256,11 @@ leaveChat str =
 {-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
 -}
 
-clearChatRoom  =
-  Lamdera.sendToBackend InitClientDict
+deleteMe  userHandle =
+  -- Lamdera.sendToBackend (DeleteUser userHandle)
+  Lamdera.sendToBackend (DeleteUser userHandle)
+
+
 
 
 -- VIEW

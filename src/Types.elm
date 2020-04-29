@@ -74,7 +74,7 @@ type FrontendMsg
     | SignUp
     | JoinChat
     | LeaveChat
-    | ClearChatRoom
+    | DeleteMe
     | EnterSignUpMode
     | EnterSignInMode
     | EnterChatMode
@@ -84,10 +84,11 @@ type FrontendMsg
 type ToBackend
     = ClientJoin String String
     | ClientLeave String
-    | InitClientDict
+    | DeleteUser String
     | MsgSubmitted String String
     | UpdateClientDict ClientId ClientAttributes
     | CheckClientRegistration String String
+    | ClearAll
 
 
 type BackendMsg

@@ -93,13 +93,21 @@ updateFromFrontend sessionId clientId msg model =
                 broadcast model.clients (UpdateFrontEndClientDict newClientDict)
               )
 
+        -- DeleteUser1 userHandle ->
+        --   let
+        --     newClientDict = Dict.remove userHandle model.clientDict
+        --   in
+        --       ({model | clientDict = newClientDict }
+        --         , Cmd.batch [
+        --             broadcast model.clients (UpdateFrontEndClientDict newClientDict)
+        --             ])
 
+        ClearAll -> model |> withNoCmd
 
-        InitClientDict ->
+        DeleteUser _ ->
               ({model | clientDict = Dict.empty, messages = []}
                 , Cmd.batch [
                     broadcast model.clients (UpdateFrontEndClientDict Dict.empty)
-                    , sendMessageHistoryToNewlyJoinedClient [] clientId
                     ])
 
         -- A client has sent us a new message! Add it to our messages list, and broadcast it to everyone.

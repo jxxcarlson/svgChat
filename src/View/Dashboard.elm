@@ -15,12 +15,6 @@ import Client
 
 
 type alias Model = FrontendModel
---
--- view : Model -> Element FrontendMsg
--- view model =
---   case model.clientId of
---     Nothing -> signInUpModel model
---     Just clientId -> dashboard model
 
 
 view : Model -> Element FrontendMsg
@@ -30,7 +24,7 @@ view model =
      el [Font.size 18, width (px 164)] (text (clientInfo model))
     ]
   , row [spacing 12] [
-     leaveChatButton, clearChatRoonButton
+     leaveChatButton,  deleteMeButton
    ]
   ]
 
@@ -63,8 +57,8 @@ gotoSignInButton =
 
 
 
-clearChatRoonButton =
-    Button.make ClearChatRoom "Clear chat room"
+deleteMeButton =
+    Button.make DeleteMe "Delete me"
         |> Button.withWidth (Bounded 140)
         |> Button.toElement
 
