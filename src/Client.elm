@@ -155,7 +155,7 @@ colorBar width r g b =
      |> Widget.Bar.withRGB r g b
      |> Widget.Bar.horizontal
      |> Widget.Bar.withSize width
-     |> Widget.Bar.withThickness 20
+     |> Widget.Bar.withThickness 28
      |> Widget.Bar.toElement
 
 makeColor : Float -> Float -> Float -> Color

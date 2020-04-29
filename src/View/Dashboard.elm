@@ -28,20 +28,12 @@ view model =
   column [spacing 18, paddingXY 7 12] [
    row [spacing 4] [
      el [Font.size 18, width (px 164)] (text (clientInfo model))
-     , clientColorBar model
     ]
   , row [spacing 12] [
      leaveChatButton, clearChatRoonButton
    ]
   ]
 
-
-clientColorBar : Model -> Element FrontendMsg
-clientColorBar model =
-      case Dict.get model.userHandle model.clientDict of
-        Nothing -> Element.none
-        Just ca ->
-          Client.colorBar 102 ca.color.red ca.color.green ca.color.blue
 
 clientInfo : Model -> String
 clientInfo model =

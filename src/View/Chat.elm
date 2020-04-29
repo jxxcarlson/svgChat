@@ -5,7 +5,7 @@ import Json.Decode as D
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
-import Element exposing (Element, el, alignTop, scrollbarY, clipX, width, height, px, text, column, row, spacing, paddingXY)
+import Element exposing (Element, el, centerY, alignTop, scrollbarY, clipX, width, height, px, text, column, row, spacing, paddingXY)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Background as Background
@@ -31,9 +31,16 @@ view model =
       |> List.reverse
       |> List.map (viewMessage model)
     )
-    ,chatInput model MessageFieldChanged
+    , row []  [chatInput model MessageFieldChanged, el [Element.moveDown 6, Element.moveLeft 18] (clientColorBar model) ]
  ]
 
+
+clientColorBar : Model -> Element FrontendMsg
+clientColorBar model =
+      case Dict.get model.userHandle model.clientDict of
+        Nothing -> Element.none
+        Just ca ->
+          Client.colorBar 43 ca.color.red ca.color.green ca.color.blue
 
 setId id =
   Element.htmlAttribute (HA.id id)
@@ -48,7 +55,7 @@ chatInput model msg =
          , HA.style "margin-top" "12px"
          , HA.placeholder model.messageFieldContent
          , HA.value model.messageFieldContent
-         , HA.style "width" "292px"
+         , HA.style "width" "240px"
          , HA.autofocus True
          ]
             ++ fontStyles
