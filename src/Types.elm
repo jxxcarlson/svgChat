@@ -65,7 +65,7 @@ type alias Color = {red: Float, green : Float, blue: Float}
 type FrontendMsg
     = MessageFieldChanged String
     | MessageSubmitted
-    | DragStart
+    | DragStart Position
     | DragMove Position
     | DragStop Position
     | GotUserHandle String

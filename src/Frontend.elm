@@ -52,11 +52,12 @@ type alias Model =
 
 subscriptions model = case model.dragState of
     Static _ ->
-      Sub.none
+      Browser.Events.onMouseDown (D.map DragStart Client.decodePosition)
 
     Moving _  ->
       Sub.batch
-        [ Browser.Events.onMouseMove (D.map DragMove Client.decodePosition)
+        [
+          Browser.Events.onMouseMove (D.map DragMove Client.decodePosition)
         , Browser.Events.onMouseUp ( D.map DragStop Client.decodePosition)
         ]
 
@@ -100,8 +101,14 @@ update msg model =
                 ]
             )
 
-        DragStart ->
-             ( {model | isDragging = True, dragState = Moving (toPosition model.dragState)}, Cmd.none )
+        DragStart pos ->
+          let
+            (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
+          in
+             ( {model | isDragging = True
+                       , clientDict = newDict
+                       , dragState = Moving (toPosition model.dragState)
+                    }, Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
 
         DragMove pos->
               let

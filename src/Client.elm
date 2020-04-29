@@ -5,6 +5,7 @@ import Random
 import Svg exposing (Svg)
 import Svg.Attributes
 import Html.Events.Extra.Mouse as Mouse
+import Html.Attributes as HA
 import List.Extra
 import Svg.Events
 import Browser.Events
@@ -75,7 +76,7 @@ word k seed =
 
 render : ClientAttributes -> Svg FrontendMsg
 render ca =
-  Svg.g [] [ renderCircle ca, renderHandle ca]
+  Svg.g [HA.attribute "user-select" "none"] [ renderCircle ca, renderHandle ca]
 
 
 
@@ -107,7 +108,6 @@ renderCircle ca =
         , Svg.Attributes.fill (toCssString ca.color)
         , Svg.Attributes.stroke "black"
         , Svg.Attributes.strokeWidth "1"
-        , Svg.Events.onMouseDown DragStart
         ]
         []
 
