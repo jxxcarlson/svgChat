@@ -13,6 +13,7 @@ import Json.Encode as E
 import Widget.Bar
 import Element exposing(Element)
 import Lamdera exposing (ClientId)
+import Time
 
 
 newAttributes : Random.Seed -> Float -> Float ->
@@ -32,6 +33,7 @@ newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId =
     , handle = userHandle
     , passwordHash = passwordHash
     , clientStatus = clientStatus
+    , signInTime = Time.millisToPosix 0
     , clientId = clientId}
     , seed3)
 
@@ -44,6 +46,7 @@ defaultAttributes =
   , handle = "XXX"
   , passwordHash = "XXX"
   , clientStatus = SignedOut
+  , signInTime = Time.millisToPosix 0
   , clientId = Nothing}
 
 map : (a -> a) -> (a, b) -> (a, b)
@@ -105,7 +108,6 @@ renderCircle ca =
         , Svg.Attributes.stroke "black"
         , Svg.Attributes.strokeWidth "1"
         , Svg.Events.onMouseDown DragStart
-
         ]
         []
 

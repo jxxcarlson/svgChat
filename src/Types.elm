@@ -5,6 +5,7 @@ import Set exposing (Set)
 import Dict exposing(Dict)
 import Random exposing(Seed)
 import Html.Events.Extra.Mouse as Mouse
+import Time exposing(Posix)
 
 type alias FrontendModel =
     { messages : List ChatMsg
@@ -51,6 +52,7 @@ type alias ClientAttributes =
     , handle : String
     , clientStatus : ClientStatus
     , passwordHash : String
+    , signInTime : Posix
     , clientId : Maybe ClientId
     }
 
