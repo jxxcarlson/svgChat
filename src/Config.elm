@@ -1,5 +1,5 @@
 module Config exposing(
-  tickInterval,
+  tickInterval, cornerX, cornerY,
   playgroundWidth, playgroundHeight, dragOffsetX, dragOffsetY)
 
 playgroundWidth = 500
@@ -9,5 +9,9 @@ playgroundHeight = 500
 dragOffsetX = 370
 
 dragOffsetY = 50
+
+cornerX = 370
+
+cornerY = 50
 
 tickInterval = 1000

@@ -102,15 +102,21 @@ update msg model =
             )
 
         DragStart pos ->
-          let
-            (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
-          in
-             ( {model | isDragging = True
-                       , clientDict = newDict
-                       , dragState = Moving (toPosition model.dragState)
-                    }, Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
+          case inBounds pos of
+            False -> model |> withNoCmd
+            True ->
+              let
+                (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
+              in
+                 ( {model | isDragging = True
+                           , clientDict = newDict
+                           , dragState = Moving (toPosition model.dragState)
+                        }, Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
 
         DragMove pos->
+          case inBounds pos of
+            False -> model |> withNoCmd
+            True ->
               let
                 (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
               in
@@ -229,6 +235,14 @@ updateFromBackend msg model =
 
 
 -- HELPERS
+
+
+inBounds : Position -> Bool
+inBounds pos =
+  pos.x > Config.cornerX
+  && pos.x < Config.cornerX + Config.playgroundWidth
+  && pos.y > Config.cornerY
+  && pos.y < Config.cornerY + Config.playgroundHeight
 
 joinChat str password =
   Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
