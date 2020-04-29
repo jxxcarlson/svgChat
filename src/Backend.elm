@@ -66,7 +66,7 @@ updateFromFrontend sessionId clientId msg model =
                   let
 
                       newClientAttributes =
-                        {clientAttributes | clientStatus = SignedIn, clientId = Just clientId }
+                        {clientAttributes | clientStatus = SignedIn, clientId = Just clientId, signInTime = model.currentTime }
 
                       newClientDict = Dict.insert userHandle newClientAttributes model.clientDict
 
