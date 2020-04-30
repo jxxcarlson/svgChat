@@ -259,7 +259,7 @@ updateFromBackend msg model =
                 , repeatedPassword = ""
                 , clientDict = freshDict
                 , appMode = ChatMode
-                , dragState = Static (clientPosition clientId freshDict)
+                , dragState = Static (clientPosition userHandle freshDict)
             }
                 |> withNoCmd
 
@@ -279,44 +279,6 @@ updateFromBackend msg model =
 
         AuthenticationFailure ->
             { model | message = "No match" } |> withNoCmd
-
-
-
--- HELPERS
-
-
-inBounds : Position -> Bool
-inBounds pos =
-    pos.x
-        > Config.cornerX
-        && pos.x
-        < Config.cornerX
-        + Config.playgroundWidth
-        && pos.y
-        > Config.cornerY
-        && pos.y
-        < Config.cornerY
-        + Config.playgroundHeight
-
-
-clearMessages =
-    Lamdera.sendToBackend ClearStoredMessages
-
-
-joinChat str password =
-    Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
-
-
-leaveChat str =
-    Lamdera.sendToBackend (ClientLeave str)
-
-
-deleteMe userHandle =
-    Lamdera.sendToBackend (DeleteUser userHandle)
-
-
-clearAll =
-    Lamdera.sendToBackend ClearAll
 
 
 
@@ -360,12 +322,48 @@ timeoutInMs =
 
 
 
--- CLIENT HELPERS
+-- HELPERS
 
 
-clientPosition : ClientId -> ClientDict -> Position
-clientPosition clientId clientDict =
-    case Dict.get clientId clientDict of
+{-| Is the point inside the conference room?
+-}
+inBounds : Position -> Bool
+inBounds pos =
+    pos.x
+        > Config.cornerX
+        && pos.x
+        < Config.cornerX
+        + Config.playgroundWidth
+        && pos.y
+        > Config.cornerY
+        && pos.y
+        < Config.cornerY
+        + Config.playgroundHeight
+
+
+clearMessages =
+    Lamdera.sendToBackend ClearStoredMessages
+
+
+joinChat str password =
+    Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
+
+
+leaveChat str =
+    Lamdera.sendToBackend (ClientLeave str)
+
+
+deleteMe userHandle =
+    Lamdera.sendToBackend (DeleteUser userHandle)
+
+
+clearAll =
+    Lamdera.sendToBackend ClearAll
+
+
+clientPosition : UserHandle -> ClientDict -> Position
+clientPosition userHandle clientDict =
+    case Dict.get (Debug.log "XX" userHandle) clientDict of
         Nothing ->
             { x = 50, y = 50 }
 
@@ -397,7 +395,6 @@ toPosition dragState =
 
 setClientPosition : Position -> String -> ClientDict -> Maybe ( ClientAttributes, ClientDict )
 setClientPosition pos userHandle clientDict =
-    -- TODO: remove magic numbers
     case Dict.get userHandle clientDict of
         Nothing ->
             Nothing

@@ -1,4 +1,4 @@
-module Client exposing (colorBar, decodePosition, defaultAttributes, encrypt, newAttributes, render, toCssString, word)
+module Client exposing (colorBar, decodePosition, encrypt, newAttributes, render, toCssString, word)
 
 import Browser.Events
 import Crypto.HMAC exposing (sha256, sha512)
@@ -57,28 +57,9 @@ newAttributes seed maxX maxY clientStatus userHandle passwordHash clientId time 
     )
 
 
-defaultAttributes =
-    { x = 0
-    , y = 0
-    , radius = 20
-    , color = { red = 0, green = 0, blue = 0 }
-    , fontColor = { red = 1, green = 1, blue = 1 }
-    , handle = "XXX"
-    , passwordHash = encrypt "XXX"
-    , clientStatus = SignedOut
-    , signInTime = Time.millisToPosix 0
-    , clientId = Nothing
-    }
-
-
 map : (a -> a) -> ( a, b ) -> ( a, b )
 map f ( a_, b_ ) =
     ( f a_, b_ )
-
-
-
--- randomHandle : Seed -> (String, Seed)
--- randomHandle seed =
 
 
 letter : Random.Generator Char

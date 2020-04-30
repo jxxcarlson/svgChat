@@ -52,8 +52,12 @@ type alias BackendModel =
     }
 
 
+type alias UserHandle =
+    String
+
+
 type alias ClientDict =
-    Dict String ClientAttributes
+    Dict UserHandle ClientAttributes
 
 
 
