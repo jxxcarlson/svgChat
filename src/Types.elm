@@ -1,11 +1,12 @@
 module Types exposing (..)
 
-import Lamdera exposing (ClientId)
-import Set exposing (Set)
-import Dict exposing(Dict)
-import Random exposing(Seed)
+import Dict exposing (Dict)
 import Html.Events.Extra.Mouse as Mouse
-import Time exposing(Posix)
+import Lamdera exposing (ClientId)
+import Random exposing (Seed)
+import Set exposing (Set)
+import Time exposing (Posix)
+
 
 type alias FrontendModel =
     { messages : List ChatMsg
@@ -19,18 +20,27 @@ type alias FrontendModel =
     , repeatedPassword : String
     , appMode : AppMode
     , message : String
-    , zone : Time.Zone }
+    , zone : Time.Zone
+    }
 
 
-type AppMode = ChatMode | StartMode SignMode
+type AppMode
+    = ChatMode
+    | StartMode SignMode
 
-type SignMode = SignUpMode | SignInMode
 
-type alias Position = {x : Float, y: Float}
+type SignMode
+    = SignUpMode
+    | SignInMode
+
+
+type alias Position =
+    { x : Float, y : Float }
+
 
 type DragState
-  = Static Position
-  | Moving Position
+    = Static Position
+    | Moving Position
 
 
 type alias BackendModel =
@@ -39,11 +49,17 @@ type alias BackendModel =
     , clientDict : ClientDict
     , currentTime : Posix
     , seed : Random.Seed
-     }
+    }
 
-type alias ClientDict = Dict String ClientAttributes -- key is the user handle
 
+type alias ClientDict =
+    Dict String ClientAttributes
+
+
+
+-- key is the user handle
 -- type alias SvgMessage = ClientAttributes
+
 
 type alias ClientAttributes =
     { x : Float
@@ -58,9 +74,14 @@ type alias ClientAttributes =
     , clientId : Maybe ClientId
     }
 
-type ClientStatus = SignedIn | SignedOut
 
-type alias Color = {red: Float, green : Float, blue: Float}
+type ClientStatus
+    = SignedIn
+    | SignedOut
+
+
+type alias Color =
+    { red : Float, green : Float, blue : Float }
 
 
 type FrontendMsg
@@ -96,7 +117,6 @@ type ToBackend
     | ClearStoredMessages
 
 
-
 type BackendMsg
     = BNoop
     | Tick Posix
@@ -114,9 +134,8 @@ type ToFrontend
     | SystemMessage String
 
 
-
 type alias Message =
-  { id : ClientId, handle: String, content: String }
+    { id : ClientId, handle : String, content : String }
 
 
 type ChatMsg

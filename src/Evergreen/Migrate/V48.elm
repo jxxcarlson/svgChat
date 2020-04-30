@@ -1,29 +1,31 @@
 module Evergreen.Migrate.V48 exposing (..)
 
+import Dict
 import Evergreen.V41.Types as Old
-import Evergreen.V48.Types as New exposing(SignMode(..), AppMode(..), DragState(..), Position)
+import Evergreen.V48.Types as New exposing (AppMode(..), DragState(..), Position, SignMode(..))
 import Lamdera.Migrations exposing (..)
 import Set
-import Dict
-import Time exposing(Zone, Posix)
+import Time exposing (Posix, Zone)
 
 
 frontendModel : Old.FrontendModel -> ModelMigration New.FrontendModel New.FrontendMsg
 frontendModel old =
-    ModelMigrated ( {
-        messages = []
-      , messageFieldContent = ""
-      , clientDict = Dict.empty
-      , clientId = Nothing
-      , isDragging = False
-      , dragState = Static {x = 50, y = 50}
-      , password = ""
-      , repeatedPassword = ""
-      , userHandle = "---"
-      , appMode = StartMode SignInMode
-      , message = ""
-      , zone = Time.utc
-       }, Cmd.none)
+    ModelMigrated
+        ( { messages = []
+          , messageFieldContent = ""
+          , clientDict = Dict.empty
+          , clientId = Nothing
+          , isDragging = False
+          , dragState = Static { x = 50, y = 50 }
+          , password = ""
+          , repeatedPassword = ""
+          , userHandle = "---"
+          , appMode = StartMode SignInMode
+          , message = ""
+          , zone = Time.utc
+          }
+        , Cmd.none
+        )
 
 
 backendModel : Old.BackendModel -> ModelMigration New.BackendModel New.BackendMsg
@@ -34,24 +36,59 @@ backendModel old =
 frontendMsg : Old.FrontendMsg -> MsgMigration New.FrontendMsg New.FrontendMsg
 frontendMsg old =
     case old of
-           Old.MessageFieldChanged _ -> MsgOldValueIgnored
-           Old.MessageSubmitted -> MsgOldValueIgnored
-           Old.DragStart _ -> MsgOldValueIgnored
-           Old.DragMove _ -> MsgOldValueIgnored
-           Old.DragStop _ -> MsgOldValueIgnored
-           Old.GotUserHandle _ -> MsgOldValueIgnored
-           Old.GotPassword _ -> MsgOldValueIgnored
-           Old.GotRepeatedPassword _ -> MsgOldValueIgnored
-           Old.SignUp -> MsgOldValueIgnored
-           Old.JoinChat -> MsgOldValueIgnored
-           Old.LeaveChat -> MsgOldValueIgnored
-           Old.EnterSignUpMode -> MsgOldValueIgnored
-           Old.EnterSignInMode -> MsgOldValueIgnored
-           Old.EnterChatMode -> MsgOldValueIgnored
-           Old.Noop -> MsgOldValueIgnored
-           Old.DeleteMe -> MsgOldValueIgnored
-           Old.RequestClearAllUsers -> MsgOldValueIgnored
-           Old.ClearMessages -> MsgOldValueIgnored
+        Old.MessageFieldChanged _ ->
+            MsgOldValueIgnored
+
+        Old.MessageSubmitted ->
+            MsgOldValueIgnored
+
+        Old.DragStart _ ->
+            MsgOldValueIgnored
+
+        Old.DragMove _ ->
+            MsgOldValueIgnored
+
+        Old.DragStop _ ->
+            MsgOldValueIgnored
+
+        Old.GotUserHandle _ ->
+            MsgOldValueIgnored
+
+        Old.GotPassword _ ->
+            MsgOldValueIgnored
+
+        Old.GotRepeatedPassword _ ->
+            MsgOldValueIgnored
+
+        Old.SignUp ->
+            MsgOldValueIgnored
+
+        Old.JoinChat ->
+            MsgOldValueIgnored
+
+        Old.LeaveChat ->
+            MsgOldValueIgnored
+
+        Old.EnterSignUpMode ->
+            MsgOldValueIgnored
+
+        Old.EnterSignInMode ->
+            MsgOldValueIgnored
+
+        Old.EnterChatMode ->
+            MsgOldValueIgnored
+
+        Old.Noop ->
+            MsgOldValueIgnored
+
+        Old.DeleteMe ->
+            MsgOldValueIgnored
+
+        Old.RequestClearAllUsers ->
+            MsgOldValueIgnored
+
+        Old.ClearMessages ->
+            MsgOldValueIgnored
 
 
 toBackend : Old.ToBackend -> MsgMigration New.ToBackend New.BackendMsg

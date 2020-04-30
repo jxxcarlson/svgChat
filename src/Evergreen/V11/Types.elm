@@ -42,7 +42,8 @@ type alias ClientAttributes =
     }
 
 
-type alias ClientDict = (Dict.Dict Lamdera.ClientId ClientAttributes)
+type alias ClientDict =
+    Dict.Dict Lamdera.ClientId ClientAttributes
 
 
 type alias Position =
@@ -57,10 +58,10 @@ type DragState
 
 
 type alias FrontendModel =
-    { messages : (List ChatMsg)
+    { messages : List ChatMsg
     , messageFieldContent : String
     , clientDict : ClientDict
-    , clientId : (Maybe Lamdera.ClientId)
+    , clientId : Maybe Lamdera.ClientId
     , isDragging : Bool
     , dragState : DragState
     , userHandle : String
@@ -69,8 +70,8 @@ type alias FrontendModel =
 
 
 type alias BackendModel =
-    { messages : (List Message)
-    , clients : (Set.Set Lamdera.ClientId)
+    { messages : List Message
+    , clients : Set.Set Lamdera.ClientId
     , clientDict : ClientDict
     , seed : Random.Seed
     }

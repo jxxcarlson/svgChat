@@ -17,23 +17,54 @@ backendModel old =
 
 frontendMsg : Old.FrontendMsg -> MsgMigration New.FrontendMsg New.FrontendMsg
 frontendMsg old =
-        case old of
-          Old.MessageFieldChanged _ -> MsgOldValueIgnored
-          Old.MessageSubmitted -> MsgOldValueIgnored
-          Old.DragStart -> MsgOldValueIgnored
-          Old.DragMove _ -> MsgOldValueIgnored
-          Old.DragStop _ -> MsgOldValueIgnored
-          Old.GotUserHandle _ -> MsgOldValueIgnored
-          Old.GotPassword _ -> MsgOldValueIgnored
-          Old.GotRepeatedPassword _ -> MsgOldValueIgnored
-          Old.SignUp -> MsgOldValueIgnored
-          Old.JoinChat -> MsgOldValueIgnored
-          Old.LeaveChat -> MsgOldValueIgnored
-          Old.ClearChatRoom -> MsgOldValueIgnored
-          Old.EnterSignUpMode -> MsgOldValueIgnored
-          Old.EnterSignInMode -> MsgOldValueIgnored
-          Old.EnterChatMode -> MsgOldValueIgnored
-          Old.Noop -> MsgOldValueIgnored
+    case old of
+        Old.MessageFieldChanged _ ->
+            MsgOldValueIgnored
+
+        Old.MessageSubmitted ->
+            MsgOldValueIgnored
+
+        Old.DragStart ->
+            MsgOldValueIgnored
+
+        Old.DragMove _ ->
+            MsgOldValueIgnored
+
+        Old.DragStop _ ->
+            MsgOldValueIgnored
+
+        Old.GotUserHandle _ ->
+            MsgOldValueIgnored
+
+        Old.GotPassword _ ->
+            MsgOldValueIgnored
+
+        Old.GotRepeatedPassword _ ->
+            MsgOldValueIgnored
+
+        Old.SignUp ->
+            MsgOldValueIgnored
+
+        Old.JoinChat ->
+            MsgOldValueIgnored
+
+        Old.LeaveChat ->
+            MsgOldValueIgnored
+
+        Old.ClearChatRoom ->
+            MsgOldValueIgnored
+
+        Old.EnterSignUpMode ->
+            MsgOldValueIgnored
+
+        Old.EnterSignInMode ->
+            MsgOldValueIgnored
+
+        Old.EnterChatMode ->
+            MsgOldValueIgnored
+
+        Old.Noop ->
+            MsgOldValueIgnored
 
 
 toBackend : Old.ToBackend -> MsgMigration New.ToBackend New.BackendMsg

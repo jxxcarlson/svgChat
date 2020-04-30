@@ -17,38 +17,82 @@ backendModel old =
 
 frontendMsg : Old.FrontendMsg -> MsgMigration New.FrontendMsg New.FrontendMsg
 frontendMsg old =
-   case old of
-          Old.MessageFieldChanged _ -> MsgOldValueIgnored
-          Old.MessageSubmitted -> MsgOldValueIgnored
-          Old.DragStart _ -> MsgOldValueIgnored
-          Old.DragMove _ -> MsgOldValueIgnored
-          Old.DragStop _ -> MsgOldValueIgnored
-          Old.GotUserHandle _ -> MsgOldValueIgnored
-          Old.GotPassword _ -> MsgOldValueIgnored
-          Old.GotRepeatedPassword _ -> MsgOldValueIgnored
-          Old.SignUp -> MsgOldValueIgnored
-          Old.JoinChat -> MsgOldValueIgnored
-          Old.LeaveChat -> MsgOldValueIgnored
-          Old.EnterSignUpMode -> MsgOldValueIgnored
-          Old.EnterSignInMode -> MsgOldValueIgnored
-          Old.EnterChatMode -> MsgOldValueIgnored
-          Old.Noop -> MsgOldValueIgnored
-          Old.DeleteMe -> MsgOldValueIgnored
-          Old.RequestClearAllUsers -> MsgOldValueIgnored
+    case old of
+        Old.MessageFieldChanged _ ->
+            MsgOldValueIgnored
+
+        Old.MessageSubmitted ->
+            MsgOldValueIgnored
+
+        Old.DragStart _ ->
+            MsgOldValueIgnored
+
+        Old.DragMove _ ->
+            MsgOldValueIgnored
+
+        Old.DragStop _ ->
+            MsgOldValueIgnored
+
+        Old.GotUserHandle _ ->
+            MsgOldValueIgnored
+
+        Old.GotPassword _ ->
+            MsgOldValueIgnored
+
+        Old.GotRepeatedPassword _ ->
+            MsgOldValueIgnored
+
+        Old.SignUp ->
+            MsgOldValueIgnored
+
+        Old.JoinChat ->
+            MsgOldValueIgnored
+
+        Old.LeaveChat ->
+            MsgOldValueIgnored
+
+        Old.EnterSignUpMode ->
+            MsgOldValueIgnored
+
+        Old.EnterSignInMode ->
+            MsgOldValueIgnored
+
+        Old.EnterChatMode ->
+            MsgOldValueIgnored
+
+        Old.Noop ->
+            MsgOldValueIgnored
+
+        Old.DeleteMe ->
+            MsgOldValueIgnored
+
+        Old.RequestClearAllUsers ->
+            MsgOldValueIgnored
+
 
 toBackend : Old.ToBackend -> MsgMigration New.ToBackend New.BackendMsg
 toBackend old =
-          case old of
-             Old.ClientJoin _ _ -> MsgOldValueIgnored
-             Old.MsgSubmitted _ _ -> MsgOldValueIgnored
-             Old.UpdateClientDict _ _ -> MsgOldValueIgnored
-             Old.ClientLeave _ -> MsgOldValueIgnored
-             Old.CheckClientRegistration _ _  -> MsgOldValueIgnored
-             Old.ClearAll  -> MsgOldValueIgnored
-             Old.DeleteUser _ -> MsgOldValueIgnored
+    case old of
+        Old.ClientJoin _ _ ->
+            MsgOldValueIgnored
 
+        Old.MsgSubmitted _ _ ->
+            MsgOldValueIgnored
 
+        Old.UpdateClientDict _ _ ->
+            MsgOldValueIgnored
 
+        Old.ClientLeave _ ->
+            MsgOldValueIgnored
+
+        Old.CheckClientRegistration _ _ ->
+            MsgOldValueIgnored
+
+        Old.ClearAll ->
+            MsgOldValueIgnored
+
+        Old.DeleteUser _ ->
+            MsgOldValueIgnored
 
 
 backendMsg : Old.BackendMsg -> MsgMigration New.BackendMsg New.BackendMsg

@@ -22,13 +22,24 @@ frontendMsg old =
 
 toBackend : Old.ToBackend -> MsgMigration New.ToBackend New.BackendMsg
 toBackend old =
-      case old of
-         Old.ClientJoin _ _ -> MsgOldValueIgnored
-         Old.MsgSubmitted _ _ -> MsgOldValueIgnored
-         Old.UpdateClientDict _ _ -> MsgOldValueIgnored
-         Old.ClientLeave _ -> MsgOldValueIgnored
-         Old.InitClientDict -> MsgOldValueIgnored
-         Old.CheckClientRegistration _ _ -> MsgOldValueIgnored
+    case old of
+        Old.ClientJoin _ _ ->
+            MsgOldValueIgnored
+
+        Old.MsgSubmitted _ _ ->
+            MsgOldValueIgnored
+
+        Old.UpdateClientDict _ _ ->
+            MsgOldValueIgnored
+
+        Old.ClientLeave _ ->
+            MsgOldValueIgnored
+
+        Old.InitClientDict ->
+            MsgOldValueIgnored
+
+        Old.CheckClientRegistration _ _ ->
+            MsgOldValueIgnored
 
 
 backendMsg : Old.BackendMsg -> MsgMigration New.BackendMsg New.BackendMsg

@@ -1,17 +1,37 @@
-module Config exposing(
-  tickInterval, cornerX, cornerY,
-  playgroundWidth, playgroundHeight, dragOffsetX, dragOffsetY)
+module Config exposing
+    ( cornerX
+    , cornerY
+    , dragOffsetX
+    , dragOffsetY
+    , playgroundHeight
+    , playgroundWidth
+    , tickInterval
+    )
 
-playgroundWidth = 500
 
-playgroundHeight = 500
+playgroundWidth =
+    500
 
-dragOffsetX = 370
 
-dragOffsetY = 50
+playgroundHeight =
+    500
 
-cornerX = 370
 
-cornerY = 50
+dragOffsetX =
+    370
 
-tickInterval = 10*1000
+
+dragOffsetY =
+    50
+
+
+cornerX =
+    370
+
+
+cornerY =
+    50
+
+
+tickInterval =
+    10 * 1000

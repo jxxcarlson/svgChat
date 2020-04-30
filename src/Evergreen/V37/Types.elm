@@ -7,7 +7,7 @@ import Set
 import Time
 
 
-type alias Message = 
+type alias Message =
     { id : Lamdera.ClientId
     , handle : String
     , content : String
@@ -21,7 +21,7 @@ type ChatMsg
     | UserLeftChat String
 
 
-type alias Color = 
+type alias Color =
     { red : Float
     , green : Float
     , blue : Float
@@ -33,7 +33,7 @@ type ClientStatus
     | SignedOut
 
 
-type alias ClientAttributes = 
+type alias ClientAttributes =
     { x : Float
     , y : Float
     , radius : Float
@@ -43,14 +43,15 @@ type alias ClientAttributes =
     , clientStatus : ClientStatus
     , passwordHash : String
     , signInTime : Time.Posix
-    , clientId : (Maybe Lamdera.ClientId)
+    , clientId : Maybe Lamdera.ClientId
     }
 
 
-type alias ClientDict = (Dict.Dict String ClientAttributes)
+type alias ClientDict =
+    Dict.Dict String ClientAttributes
 
 
-type alias Position = 
+type alias Position =
     { x : Float
     , y : Float
     }
@@ -72,10 +73,10 @@ type AppMode
 
 
 type alias FrontendModel =
-    { messages : (List ChatMsg)
+    { messages : List ChatMsg
     , messageFieldContent : String
     , clientDict : ClientDict
-    , clientId : (Maybe Lamdera.ClientId)
+    , clientId : Maybe Lamdera.ClientId
     , isDragging : Bool
     , dragState : DragState
     , userHandle : String
@@ -87,8 +88,8 @@ type alias FrontendModel =
 
 
 type alias BackendModel =
-    { messages : (List Message)
-    , clients : (Set.Set Lamdera.ClientId)
+    { messages : List Message
+    , clients : Set.Set Lamdera.ClientId
     , clientDict : ClientDict
     , currentTime : Time.Posix
     , seed : Random.Seed

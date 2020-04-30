@@ -12,7 +12,7 @@ type ChatMsg
     | MsgReceived Lamdera.ClientId String
 
 
-type alias Color = 
+type alias Color =
     { red : Float
     , green : Float
     , blue : Float
@@ -24,7 +24,7 @@ type ClientStatus
     | SignedOut
 
 
-type alias ClientAttributes = 
+type alias ClientAttributes =
     { x : Float
     , y : Float
     , radius : Float
@@ -35,10 +35,11 @@ type alias ClientAttributes =
     }
 
 
-type alias ClientDict = (Dict.Dict Lamdera.ClientId ClientAttributes)
+type alias ClientDict =
+    Dict.Dict Lamdera.ClientId ClientAttributes
 
 
-type alias Position = 
+type alias Position =
     { x : Float
     , y : Float
     }
@@ -50,21 +51,22 @@ type DragState
 
 
 type alias FrontendModel =
-    { messages : (List ChatMsg)
+    { messages : List ChatMsg
     , messageFieldContent : String
     , clientDict : ClientDict
-    , clientId : (Maybe Lamdera.ClientId)
+    , clientId : Maybe Lamdera.ClientId
     , isDragging : Bool
     , dragState : DragState
     }
 
 
-type alias Message = (String, String)
+type alias Message =
+    ( String, String )
 
 
 type alias BackendModel =
-    { messages : (List Message)
-    , clients : (Set.Set Lamdera.ClientId)
+    { messages : List Message
+    , clients : Set.Set Lamdera.ClientId
     , clientDict : ClientDict
     , seed : Random.Seed
     }
