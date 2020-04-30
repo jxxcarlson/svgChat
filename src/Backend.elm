@@ -119,9 +119,9 @@ updateFromFrontend sessionId clientId msg model =
             , broadcast model.clients (RoomMsgReceived {id = clientId, handle = handle, content = text })
             )
 
-        UpdateClientDict clientId_ clientAttributes ->
+        UpdateClientDict userHandle clientAttributes ->
           let
-            newDict = Dict.insert clientId_ clientAttributes model.clientDict
+            newDict = Dict.insert userHandle clientAttributes model.clientDict
           in
             ({ model | clientDict = newDict}, broadcast model.clients (UpdateFrontEndClientDict newDict))
 
@@ -139,7 +139,7 @@ updateFromFrontend sessionId clientId msg model =
                         = Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId) model.currentTime
 
                 newDict = Dict.insert handle newClientAttributes model.clientDict
-                newModel = { model | seed = newSeed, clientDict = newDict}
+                newModel = { model | seed = newSeed, clientDict = newDict, clients = Set.insert clientId model.clients}
               in
                 ( newModel
                   , Cmd.batch [
@@ -149,6 +149,7 @@ updateFromFrontend sessionId clientId msg model =
                         , Lamdera.sendToFrontend clientId (RegisterClientId clientId handle newDict)
                       , broadcast newModel.clients (UpdateFrontEndClientDict newDict)
                      ] )
+
 
 
 -- HELPERS
@@ -180,9 +181,10 @@ setStatus clientStatus userHandle clientDict =
       let
         -- newAttributes = { attributes | clientStatus = clientStatus }
         updater : Maybe clientStatus -> Maybe clientStatus
-        updater maybeClientStatus of
-          Nothing -> Nothing
-          Just cs -> Just cs
+        updater maybeClientStatus =
+          case maybeClientStatus of
+            Nothing -> Nothing
+            Just cs -> Just cs
       in
         Dict.update userHandle updater clientDict
 
