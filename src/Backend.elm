@@ -178,9 +178,13 @@ setStatus clientStatus userHandle clientDict =
     Nothing -> clientDict
     Just attributes ->
       let
-        newAttributes = { attributes | clientStatus = clientStatus }
+        -- newAttributes = { attributes | clientStatus = clientStatus }
+        updater : Maybe clientStatus -> Maybe clientStatus
+        updater maybeClientStatus of
+          Nothing -> Nothing
+          Just cs -> Just cs
       in
-        Dict.insert userHandle newAttributes clientDict
+        Dict.update userHandle updater clientDict
 
 userHandleAvailable : String -> ClientDict -> Bool
 userHandleAvailable name clientDict  =
