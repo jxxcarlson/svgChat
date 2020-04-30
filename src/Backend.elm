@@ -88,7 +88,7 @@ updateFromFrontend sessionId clientId msg model =
           let
             newClientDict = setStatus SignedOut userHandle model.clientDict
           in
-            ({model | clientDict = newClientDict
+            ({model | clientDict = newClientDict, clients = Set.remove clientId model.clients
               , messages = {id = clientId, handle = userHandle, content = "left the chat" } :: model.messages},
                 broadcast model.clients (UpdateFrontEndClientDict newClientDict)
               )
@@ -179,12 +179,11 @@ setStatus clientStatus userHandle clientDict =
     Nothing -> clientDict
     Just attributes ->
       let
-        -- newAttributes = { attributes | clientStatus = clientStatus }
-        updater : Maybe clientStatus -> Maybe clientStatus
-        updater maybeClientStatus =
-          case maybeClientStatus of
+        updater : Maybe ClientAttributes -> Maybe ClientAttributes
+        updater maybeClientAttributes =
+          case maybeClientAttributes of
             Nothing -> Nothing
-            Just cs -> Just cs
+            Just ca -> Just { ca | clientStatus = clientStatus}
       in
         Dict.update userHandle updater clientDict
 
