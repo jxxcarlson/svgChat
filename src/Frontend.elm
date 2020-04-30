@@ -6,7 +6,7 @@ import Client
 import Cmd.Extra exposing (withCmd, withCmds, withNoCmd)
 import Config
 import Dict
-import Element exposing (Element, column, focusStyle, paddingXY, row, spacing)
+import Element exposing (Element, column, alignTop, focusStyle, paddingXY, row, spacing)
 import Element.Background as Background
 import Html exposing (Html)
 import Html.Events.Extra.Mouse as Mouse
@@ -23,6 +23,8 @@ import View.Dashboard as Dashboard
 import View.Roster as Roster
 import View.Start as Start
 import Widget.Style
+import Widget.Button as Button exposing(Size(..))
+import Config
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -79,6 +81,7 @@ init =
       , repeatedPassword = ""
       , appMode = StartMode SignInMode
       , message = ""
+      , panelSelected = RosterPanel
       , zone = Time.utc
       }
     , Task.perform AdjustTimeZone Time.here
@@ -185,7 +188,7 @@ update msg model =
             ( { model | appMode = StartMode SignInMode }, Cmd.none )
 
         EnterChatMode ->
-            ( { model | appMode = ChatMode }, Cmd.none )
+            ( { model | appMode = ConferenceMode }, Cmd.none )
 
         LeaveChat ->
             ( { model | clientId = Nothing, appMode = StartMode SignInMode }, leaveChat model.userHandle )
@@ -198,6 +201,9 @@ update msg model =
 
         AdjustTimeZone newZone ->
             { model | zone = newZone } |> withCmd Cmd.none
+
+        SelectPanel panel ->
+          { model | panelSelected = panel } |> withNoCmd
 
         Noop ->
             ( model, Cmd.none )
@@ -258,7 +264,7 @@ updateFromBackend msg model =
                 , password = ""
                 , repeatedPassword = ""
                 , clientDict = freshDict
-                , appMode = ChatMode
+                , appMode = ConferenceMode
                 , dragState = Static (clientPosition userHandle freshDict)
             }
                 |> withNoCmd
@@ -272,7 +278,7 @@ updateFromBackend msg model =
                     { model | message = "Not available" } |> withNoCmd
 
                 True ->
-                    { model | appMode = ChatMode } |> withNoCmd
+                    { model | appMode = ConferenceMode } |> withNoCmd
 
         SystemMessage str ->
             ( { model | message = str }, Cmd.none )
@@ -289,9 +295,9 @@ view : Model -> Html FrontendMsg
 view model =
     Element.layoutWith
         { options =
-            [ focusStyle Widget.Style.noFocus ]
+            [ focusStyle Widget.Style.noFocus]
         }
-        [ Background.color Style.warmMediumGray ]
+        [ Background.color Style.warmMediumGray, Element.clipX, Element.clipY  ]
         (mainView model)
 
 
@@ -301,20 +307,46 @@ mainView model =
         StartMode _ ->
             Start.view model
 
-        ChatMode ->
-            chatView model
+        ConferenceMode ->
+            conferenceView model
 
 
-chatView : Model -> Element FrontendMsg
-chatView model =
-    row [ spacing 12, paddingXY 60 60 ]
-        [ column [ spacing 12 ]
-            [ Chat.view model
-            , Dashboard.view model
-            ]
-        , Conference.view 502 502 model
-        , Roster.view model
-        ]
+conferenceView : Model -> Element FrontendMsg
+conferenceView model =
+  row [] [
+      Conference.view Config.playgroundWidth Config.playgroundHeight model
+    , column [] [
+        menuBar model
+       , case model.panelSelected of
+           ChatPanel -> Chat.view model
+           RosterPanel -> Roster.view model
+       , Dashboard.view model
+    ]
+    ]
+
+menuBar model =
+  row [alignTop] [ chooseRoster model, chooseChat model ]
+
+chooseRoster model =
+    Button.make (SelectPanel RosterPanel) "Roster"
+        |> Button.withWidth (Bounded 158)
+        |> Button.withSelected (model.panelSelected == RosterPanel)
+        |> Button.toElement
+
+chooseChat model =
+    Button.make (SelectPanel ChatPanel) "Chat"
+        |> Button.withWidth (Bounded 159)
+        |> Button.withSelected (model.panelSelected == ChatPanel)
+        |> Button.toElement
+    --
+    -- row [ spacing 12, paddingXY 60 60 ]
+    --     [ column [ spacing 12 ]
+    --         [ Chat.view model
+    --         , Dashboard.view model
+    --         ]
+    --     , Conference.view 502 502 model
+    --     , Roster.view model
+    --     ]
 
 
 timeoutInMs =
@@ -402,6 +434,7 @@ setClientPosition pos userHandle clientDict =
         Just info ->
             let
                 newInfo =
-                    { info | x = pos.x - Config.dragOffsetX, y = pos.y - Config.dragOffsetY }
+                    { info | x = Debug.log "newX" (pos.x - Config.dragOffsetX)
+                           , y =  Debug.log "newY" (pos.y - Config.dragOffsetY) }
             in
             Just ( newInfo, Dict.insert userHandle newInfo clientDict )

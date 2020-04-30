@@ -20,12 +20,13 @@ type alias FrontendModel =
     , repeatedPassword : String
     , appMode : AppMode
     , message : String
+    , panelSelected : PanelType
     , zone : Time.Zone
     }
 
 
 type AppMode
-    = ChatMode
+    = ConferenceMode
     | StartMode SignMode
 
 
@@ -105,10 +106,13 @@ type FrontendMsg
     | EnterSignUpMode
     | EnterSignInMode
     | EnterChatMode
+    | SelectPanel PanelType
     | ClearMessages
     | AdjustTimeZone Time.Zone
+
     | Noop
 
+type PanelType = RosterPanel | ChatPanel
 
 type ToBackend
     = ClientJoin String String

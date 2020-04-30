@@ -28,7 +28,7 @@ view model =
         [ column
             [ setId "message-box"
             , height (px 500)
-            , width (px 300)
+            , width (px 320)
             , scrollbarY
             , clipX
             , spacing 8

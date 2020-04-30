@@ -10,27 +10,27 @@ module Config exposing
 
 
 playgroundWidth =
-    500
+    1090
 
 
 playgroundHeight =
-    500
+    700
 
 
 dragOffsetX =
-    370
+    0
 
 
 dragOffsetY =
-    50
+    0
 
 
 cornerX =
-    370
+    0
 
 
 cornerY =
-    50
+    20
 
 
 tickInterval =
