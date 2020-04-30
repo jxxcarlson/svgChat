@@ -75,6 +75,7 @@ type FrontendMsg
     | JoinChat
     | LeaveChat
     | DeleteMe
+    | RequestClearAllUsers
     | EnterSignUpMode
     | EnterSignInMode
     | EnterChatMode

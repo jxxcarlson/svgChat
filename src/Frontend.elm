@@ -159,6 +159,9 @@ update msg model =
         DeleteMe ->
           ({model | appMode = StartMode SignInMode}, deleteMe model.userHandle)
 
+        RequestClearAllUsers ->
+         ({model | appMode = StartMode SignInMode}, clearAll )
+
         Noop ->
             ( model, Cmd.none )
 
@@ -257,11 +260,11 @@ leaveChat str =
 -}
 
 deleteMe  userHandle =
-  -- Lamdera.sendToBackend (DeleteUser userHandle)
   Lamdera.sendToBackend (DeleteUser userHandle)
 
 
-
+clearAll =
+  Lamdera.sendToBackend ClearAll
 
 -- VIEW
 

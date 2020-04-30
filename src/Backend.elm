@@ -93,19 +93,18 @@ updateFromFrontend sessionId clientId msg model =
                 broadcast model.clients (UpdateFrontEndClientDict newClientDict)
               )
 
-        -- DeleteUser1 userHandle ->
-        --   let
-        --     newClientDict = Dict.remove userHandle model.clientDict
-        --   in
-        --       ({model | clientDict = newClientDict }
-        --         , Cmd.batch [
-        --             broadcast model.clients (UpdateFrontEndClientDict newClientDict)
-        --             ])
+        DeleteUser userHandle ->
+          let
+            newClientDict = Dict.remove userHandle model.clientDict
+          in
+              ({model | clientDict = newClientDict }
+                , Cmd.batch [
+                    broadcast model.clients (UpdateFrontEndClientDict newClientDict)
+                    ])
 
-        ClearAll -> model |> withNoCmd
 
-        DeleteUser _ ->
-              ({model | clientDict = Dict.empty, messages = []}
+        ClearAll ->
+              ({model | clientDict = Dict.empty, messages = [], clients = Set.empty}
                 , Cmd.batch [
                     broadcast model.clients (UpdateFrontEndClientDict Dict.empty)
                     ])
