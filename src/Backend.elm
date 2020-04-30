@@ -105,8 +105,8 @@ updateFromFrontend sessionId clientId msg model =
 
 
         ClearAll ->
-           -- clearAll model
-           fixUp model
+           clearAll model
+           -- fixUp model
 
         ClearStoredMessages ->
               ({model |  messages = []}, Cmd.none)
