@@ -395,7 +395,7 @@ clearAll =
 
 clientPosition : UserHandle -> ClientDict -> Position
 clientPosition userHandle clientDict =
-    case Dict.get (Debug.log "XX" userHandle) clientDict of
+    case Dict.get userHandle clientDict of
         Nothing ->
             { x = 50, y = 50 }
 
@@ -434,7 +434,7 @@ setClientPosition pos userHandle clientDict =
         Just info ->
             let
                 newInfo =
-                    { info | x = Debug.log "newX" (pos.x - Config.dragOffsetX)
-                           , y =  Debug.log "newY" (pos.y - Config.dragOffsetY) }
+                    { info | x = pos.x - Config.dragOffsetX
+                           , y =  pos.y - Config.dragOffsetY }
             in
             Just ( newInfo, Dict.insert userHandle newInfo clientDict )
