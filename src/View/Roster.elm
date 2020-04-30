@@ -24,7 +24,7 @@ view model =
     n = List.length clientList
   in
   column [alignTop, spacing 12, width (px 320), scrollbarY,  clipX, paddingXY 30 30, height (px 500), Background.color Style.paleGreen] [
-    el [Font.bold, Font.size 24] (Element.text <| "Roster: " ++ String.fromInt n)
+    el [Font.bold, Font.size 18] (Element.text <| "Attendees (" ++ String.fromInt n ++ ")")
     , roster_ clientList
   ]
 
