@@ -105,8 +105,11 @@ update msg model =
             False -> model |> withNoCmd
             True ->
               let
-                (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
+                data = setClientPosition pos model.userHandle model.clientDict
               in
+              case data of
+                Nothing -> (model, Cmd.none)
+                Just (clientAttributes, newDict ) ->
                  ( {model | isDragging = True
                            , clientDict = newDict
                            , dragState = Moving (toPosition model.dragState)
@@ -117,11 +120,14 @@ update msg model =
             False -> model |> withNoCmd
             True ->
               let
-                (clientAttributes, newDict ) = setClientPosition pos model.userHandle model.clientDict
+                data = setClientPosition pos model.userHandle model.clientDict
               in
-                 ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
-                     , clientDict = newDict }
-                 , Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
+              case data of
+                Nothing -> (model, Cmd.none)
+                Just (clientAttributes, newDict ) ->
+                   ( { model | dragState = if model.isDragging then Moving pos else Static (toPosition model.dragState)
+                       , clientDict = newDict }
+                   , Lamdera.sendToBackend (UpdateClientDict model.userHandle clientAttributes) )
 
         DragStop pos ->
              ( { model |isDragging = False, dragState = Static pos}, Cmd.none )
@@ -329,13 +335,13 @@ toPosition dragState =
     Moving pos -> pos
 
 
-setClientPosition : Position -> String -> ClientDict -> (ClientAttributes, ClientDict)
+setClientPosition : Position -> String -> ClientDict -> Maybe (ClientAttributes, ClientDict)
 setClientPosition pos userHandle clientDict =
       -- TODO: remove magic numbers
       case Dict.get userHandle clientDict of
-        Nothing -> (Client.defaultAttributes, clientDict)
+        Nothing -> Nothing
         Just info ->
           let
             newInfo = {info | x = pos.x - Config.dragOffsetX, y = pos.y - Config.dragOffsetY }
           in
-            (newInfo, Dict.insert userHandle newInfo clientDict)
+            Just (newInfo, Dict.insert userHandle newInfo clientDict)
