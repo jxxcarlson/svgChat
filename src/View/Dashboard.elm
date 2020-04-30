@@ -26,7 +26,7 @@ view model =
   , row [spacing 12] [
      leaveChatButton , gotoStartButton
    ]
-  , row [spacing 12] [clearAllButton, deleteMeButton] -- , clearMessageslButton
+  , row [spacing 12] [ deleteMeButton] -- , clearMessageslButton
   ]
 
 
