@@ -79,6 +79,7 @@ type FrontendMsg
     | EnterSignUpMode
     | EnterSignInMode
     | EnterChatMode
+    | ClearMessages
     | Noop
 
 
@@ -90,6 +91,8 @@ type ToBackend
     | UpdateClientDict ClientId ClientAttributes
     | CheckClientRegistration String String
     | ClearAll
+    | ClearStoredMessages
+
 
 
 type BackendMsg

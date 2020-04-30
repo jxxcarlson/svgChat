@@ -95,7 +95,7 @@ updateFromFrontend sessionId clientId msg model =
 
         DeleteUser userHandle ->
           let
-            newClientDict = Dict.remove userHandle model.clientDict 
+            newClientDict = Dict.remove userHandle model.clientDict
 
           in
               ({model | clientDict = newClientDict, clients = Set.remove clientId model.clients }
@@ -109,6 +109,9 @@ updateFromFrontend sessionId clientId msg model =
                 , Cmd.batch [
                     broadcast model.clients (UpdateFrontEndClientDict Dict.empty)
                     ])
+
+        ClearStoredMessages ->
+              ({model |  messages = []}, Cmd.none)
 
         -- A client has sent us a new message! Add it to our messages list, and broadcast it to everyone.
         MsgSubmitted handle text ->
@@ -198,22 +201,9 @@ userIsValid userHandle passwordHash clientDict =
     Nothing -> False
     Just attributes -> attributes.passwordHash == passwordHash
 
-purgeUser : String -> ClientDict -> ClientDict
-purgeUser userHandle clientDict =
-  purgeClientDictionary (findClientIdByHandle userHandle clientDict) clientDict
-
 findClientIdByHandle : String -> ClientDict -> ClientId
 findClientIdByHandle handle clientDict =
     List.filter (\(id, clientAttributes) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
     |> List.map Tuple.first
     |> List.head
     |> Maybe.withDefault "INVALID"
-
-findClientDataByHandle : String -> ClientDict -> Maybe (ClientId, ClientAttributes)
-findClientDataByHandle handle clientDict =
-    List.filter (\(id, clientAttributes) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
-    |> List.head
-
-purgeClientDictionary : ClientId -> ClientDict -> ClientDict
-purgeClientDictionary clientId clientDict =
-  Dict.remove clientId  clientDict

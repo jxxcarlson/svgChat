@@ -26,7 +26,7 @@ view model =
   , row [spacing 12] [
      leaveChatButton  --,  deleteMeButton
    ]
-  , clearAllButton
+  , row [spacing 12] [clearAllButton, clearMessageslButton]
   ]
 
 
@@ -58,6 +58,11 @@ gotoSignInButton =
 
 clearAllButton =
     Button.make RequestClearAllUsers "Clear all"
+        |> Button.withWidth (Bounded 140)
+        |> Button.toElement
+
+clearMessageslButton =
+    Button.make ClearMessages "Clear messages"
         |> Button.withWidth (Bounded 140)
         |> Button.toElement
 

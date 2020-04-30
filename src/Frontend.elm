@@ -139,6 +139,9 @@ update msg model =
         JoinChat  ->
           (model,  joinChat model.userHandle (encrypt model.password))
 
+        ClearMessages  ->
+          ({ model | messages = []},  Cmd.none)
+
         SignUp ->
           case validateSignUp model of
             [] ->  (model, Lamdera.sendToBackend (CheckClientRegistration model.userHandle (encrypt model.password)) )
@@ -246,6 +249,9 @@ inBounds pos =
   && pos.x < Config.cornerX + Config.playgroundWidth
   && pos.y > Config.cornerY
   && pos.y < Config.cornerY + Config.playgroundHeight
+
+clearMessages  =
+  Lamdera.sendToBackend ClearStoredMessages
 
 joinChat str password =
   Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
