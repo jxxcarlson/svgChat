@@ -24,9 +24,9 @@ view model =
      el [Font.size 18, width (px 164)] (text (clientInfo model))
     ]
   , row [spacing 12] [
-     leaveChatButton  --,  deleteMeButton
+     leaveChatButton , gotoStartButton
    ]
-  , row [spacing 12] [clearAllButton, clearMessageslButton]
+  , row [spacing 12] [clearAllButton, deleteMeButton] -- , clearMessageslButton
   ]
 
 
@@ -51,9 +51,9 @@ roundTo k x =
   in
    xx/factor
 
-gotoSignInButton =
-       Button.make EnterSignInMode "Sign in"
-           |> Button.withWidth (Bounded 120)
+gotoStartButton =
+       Button.make EnterSignInMode "Start"
+           |> Button.withWidth (Bounded 140)
            |> Button.toElement
 
 clearAllButton =

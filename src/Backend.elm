@@ -95,7 +95,7 @@ updateFromFrontend sessionId clientId msg model =
 
         DeleteUser userHandle ->
           let
-            newClientDict = Dict.remove userHandle model.clientDict
+            newClientDict = Debug.log "NEW DICT" (Dict.remove (Debug.log "HANDLE" userHandle) (Debug.log "OLD DICT" model.clientDict))
 
           in
               ({model | clientDict = newClientDict, clients = Set.remove clientId model.clients }
