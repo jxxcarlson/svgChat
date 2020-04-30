@@ -95,7 +95,8 @@ updateFromFrontend sessionId clientId msg model =
 
         DeleteUser userHandle ->
           let
-            newClientDict = Dict.remove userHandle model.clientDict
+            newClientDict = Dict.remove userHandle model.clientDict 
+
           in
               ({model | clientDict = newClientDict, clients = Set.remove clientId model.clients }
                 , Cmd.batch [
