@@ -105,10 +105,8 @@ updateFromFrontend sessionId clientId msg model =
 
 
         ClearAll ->
-              ({model | clientDict = Dict.empty, messages = [], clients = Set.empty}
-                , Cmd.batch [
-                    broadcast model.clients (UpdateFrontEndClientDict Dict.empty)
-                    ])
+           -- clearAll model
+           fixUp model
 
         ClearStoredMessages ->
               ({model |  messages = []}, Cmd.none)
@@ -154,6 +152,19 @@ updateFromFrontend sessionId clientId msg model =
 
 -- HELPERS
 
+clearAll model =
+    ({model | clientDict = Dict.empty, messages = [], clients = Set.empty}
+      , Cmd.batch [
+          broadcast model.clients (UpdateFrontEndClientDict Dict.empty)
+          ])
+
+
+fixUp model =
+  let
+    newDict = Dict.remove "XXX" model.clientDict
+  in
+  { model | clientDict = newDict }
+    |> withCmd (broadcast model.clients (UpdateFrontEndClientDict  newDict))
 
 sendHelloMessageToAllClients clients clientId =
     broadcast clients (ClientJoinReceived clientId)

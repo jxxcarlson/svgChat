@@ -57,7 +57,7 @@ gotoStartButton =
            |> Button.toElement
 
 clearAllButton =
-    Button.make RequestClearAllUsers "Clear all"
+    Button.make RequestClearAllUsers "Fix"
         |> Button.withWidth (Bounded 140)
         |> Button.toElement
 
