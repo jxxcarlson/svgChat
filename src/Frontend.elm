@@ -287,7 +287,7 @@ chatView model =
          Chat.view model
        , Dashboard.view model
       ]
-    , Conference.view 502 502 model
+     , Conference.view 502 502 model
     , Roster.view model
 
   ]

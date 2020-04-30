@@ -24,8 +24,9 @@ view model =
      el [Font.size 18, width (px 164)] (text (clientInfo model))
     ]
   , row [spacing 12] [
-     leaveChatButton,  deleteMeButton, clearAllButton
+     leaveChatButton,  deleteMeButton
    ]
+  , clearAllButton
   ]
 
 
