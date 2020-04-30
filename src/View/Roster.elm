@@ -25,18 +25,18 @@ view model =
   in
   column [alignTop, spacing 12, width (px 320), scrollbarY,  clipX, paddingXY 30 30, height (px 500), Background.color Style.paleGreen] [
     el [Font.bold, Font.size 18] (Element.text <| "Attendees (" ++ String.fromInt n ++ ")")
-    , roster_ clientList
+    , roster_ model clientList
   ]
 
-roster_ : List (String, ClientAttributes) -> Element FrontendMsg
-roster_ clientList =
+roster_ : Model -> List (String, ClientAttributes) -> Element FrontendMsg
+roster_ model clientList =
  let
    renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
    renderItem (clientId, ca) =
      row [spacing 8, fontColor ca] [
         el [width (px 25)] (text ca.handle)
         , el [width (px 88)] (Client.colorBar 60 ca.color.red ca.color.green ca.color.blue)
-        , status ca
+        , status model ca
      ]
  in
   column [ Font.size 16, spacing 6]
@@ -50,12 +50,19 @@ fontColor ca =
     SignedOut -> Font.color Style.gray
     SignedIn -> Font.color Style.black
 
-status : ClientAttributes -> Element FrontendMsg
-status ca =
+status : Model -> ClientAttributes -> Element FrontendMsg
+status model ca =
   case ca.clientStatus of
-    SignedIn ->  el [] (text ("here since " ++ (toUtcString ca.signInTime)))
+    SignedIn ->  el [] (text ("here since " ++ (toLocalTimeString model.zone ca.signInTime)))
     SignedOut ->  el [Font.color Style.gray] (text "away")
 
+
+
+toLocalTimeString : Time.Zone -> Time.Posix -> String
+toLocalTimeString zone time =
+  (String.fromInt (toHour zone time) |> String.padLeft 2 '0')
+  ++ ":" ++
+  (String.fromInt (toMinute zone time) |> String.padLeft 2 '0')
 
 
 toUtcString : Time.Posix -> String

@@ -22,6 +22,7 @@ import View.Dashboard as Dashboard
 import View.Start as Start
 import Cmd.Extra exposing(withCmd, withCmds, withNoCmd)
 import Config
+import Time
 
 
 {-| Lamdera applications define 'app' instead of 'main'.
@@ -77,8 +78,9 @@ init =
       , repeatedPassword = ""
       , appMode = StartMode SignInMode
       , message = ""
+      , zone = Time.utc
     }
-      , Cmd.none
+      , Task.perform AdjustTimeZone Time.here
       )
 
 
@@ -169,6 +171,9 @@ update msg model =
 
         RequestClearAllUsers ->
          ({model | appMode = StartMode SignInMode}, clearAll )
+
+        AdjustTimeZone newZone ->
+          { model | zone = newZone } |> withCmd Cmd.none
 
         Noop ->
             ( model, Cmd.none )

@@ -18,7 +18,8 @@ type alias FrontendModel =
     , password : String
     , repeatedPassword : String
     , appMode : AppMode
-    , message : String }
+    , message : String
+    , zone : Time.Zone }
 
 
 type AppMode = ChatMode | StartMode SignMode
@@ -80,6 +81,7 @@ type FrontendMsg
     | EnterSignInMode
     | EnterChatMode
     | ClearMessages
+    | AdjustTimeZone Time.Zone
     | Noop
 
 
