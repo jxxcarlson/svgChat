@@ -1,4 +1,4 @@
-module Client exposing(newAttributes, colorBar, word, render, toCssString, decodePosition, defaultAttributes)
+module Client exposing(newAttributes, encrypt, colorBar, word, render, toCssString, decodePosition, defaultAttributes)
 
 import Types exposing(..)
 import Random
@@ -15,6 +15,8 @@ import Widget.Bar
 import Element exposing(Element)
 import Lamdera exposing (ClientId)
 import Time exposing(Posix)
+import Crypto.HMAC exposing (sha256, sha512)
+
 
 
 newAttributes : Random.Seed -> Float -> Float ->
@@ -45,7 +47,7 @@ defaultAttributes =
   , color = {red =0, green = 0, blue = 0}
   , fontColor = {red =1, green = 1, blue = 1}
   , handle = "XXX"
-  , passwordHash = "XXX"
+  , passwordHash = encrypt "XXX"
   , clientStatus = SignedOut
   , signInTime = Time.millisToPosix 0
   , clientId = Nothing}
@@ -184,3 +186,8 @@ getColors : Int ->  (Color, Color)
 getColors k =
   List.Extra.getAt (modBy (List.length palette) k) palette
     |> Maybe.withDefault (black, white)
+
+
+encrypt : String -> String
+encrypt str =
+    Crypto.HMAC.digest sha512 "Fee, fie, fo fum said the green giant!" str

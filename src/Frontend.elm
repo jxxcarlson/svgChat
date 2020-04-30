@@ -20,7 +20,6 @@ import View.Conference as Conference
 import View.Chat as Chat
 import View.Dashboard as Dashboard
 import View.Start as Start
-import Crypto.HMAC exposing (sha256, sha512)
 import Cmd.Extra exposing(withCmd, withCmds, withNoCmd)
 import Config
 
@@ -137,14 +136,14 @@ update msg model =
            ({ model | repeatedPassword = str }, Cmd.none)
 
         JoinChat  ->
-          (model,  joinChat model.userHandle (encrypt model.password))
+          (model,  joinChat model.userHandle (Client.encrypt model.password))
 
         ClearMessages  ->
           ({ model | messages = []},  Cmd.none)
 
         SignUp ->
           case validateSignUp model of
-            [] ->  (model, Lamdera.sendToBackend (CheckClientRegistration model.userHandle (encrypt model.password)) )
+            [] ->  (model, Lamdera.sendToBackend (CheckClientRegistration model.userHandle (Client.encrypt model.password)) )
             errors -> ({model | message = String.join "; " errors}, Cmd.none)
 
         EnterSignUpMode ->
@@ -256,14 +255,10 @@ clearMessages  =
 joinChat str password =
   Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
 
-encrypt : String -> String
-encrypt str =
-    Crypto.HMAC.digest sha512 "Fee, fie, fo fum said the green giant!" str
 
 leaveChat str =
   Lamdera.sendToBackend (ClientLeave str)
-{-| This is the normal frontend update function. It handles all messages that can occur on the frontend.
--}
+
 
 deleteMe  userHandle =
   Lamdera.sendToBackend (DeleteUser userHandle)
