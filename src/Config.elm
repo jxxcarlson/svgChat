@@ -14,4 +14,4 @@ cornerX = 370
 
 cornerY = 50
 
-tickInterval = 1000
+tickInterval = 10*1000

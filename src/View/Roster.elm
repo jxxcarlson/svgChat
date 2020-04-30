@@ -19,13 +19,17 @@ type alias Model = FrontendModel
 
 view : Model -> Element FrontendMsg
 view model =
+  let
+    clientList = Dict.toList model.clientDict
+    n = List.length clientList
+  in
   column [alignTop, spacing 12, width (px 320), scrollbarY,  clipX, paddingXY 30 30, height (px 500), Background.color Style.paleGreen] [
-    el [Font.bold, Font.size 24] (Element.text "Roster")
-    , roster_ model
+    el [Font.bold, Font.size 24] (Element.text <| "Roster: " ++ String.fromInt n)
+    , roster_ clientList
   ]
 
-roster_ : Model -> Element FrontendMsg
-roster_ model =
+roster_ : List (String, ClientAttributes) -> Element FrontendMsg
+roster_ clientList =
  let
    renderItem : (ClientId, ClientAttributes) -> Element FrontendMsg
    renderItem (clientId, ca) =
@@ -35,9 +39,8 @@ roster_ model =
         , status ca
      ]
  in
-  column [width (px Config.playgroundWidth), height (px Config.playgroundWidth), Font.size 16, spacing 6]
-    (model.clientDict
-      |> Dict.toList
+  column [ Font.size 16, spacing 6]
+    (clientList
       |> List.sortBy (\(id, ca) -> ca.handle)
       |> List.map renderItem)
 
