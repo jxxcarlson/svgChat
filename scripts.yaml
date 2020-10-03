@@ -1,0 +1,9 @@
+scripts:
+  make: 
+    - lamdera make src/Backend.elm
+    - lamdera make src/Frontend.elm
+
+  live: lamdera live
+
+  clean:
+    - rm -rf lamdera-stuff
