@@ -76,7 +76,7 @@ init =
       , clientId = Nothing
       , isDragging = False
       , dragState = Static { x = 50, y = 50 }
-      , userHandle = "XYZ"
+      , userHandle = ""
       , password = ""
       , repeatedPassword = ""
       , appMode = StartMode SignInMode
@@ -159,7 +159,7 @@ update msg model =
             ( { model | isDragging = False, dragState = Static pos }, Cmd.none )
 
         GotUserHandle str ->
-            ( { model | userHandle = String.toUpper str }, Cmd.none )
+            ( { model | userHandle = str }, Cmd.none )
 
         GotPassword str ->
             ( { model | password = str }, Cmd.none )
@@ -209,32 +209,6 @@ update msg model =
             ( model, Cmd.none )
 
 
-validateSignUp : Model -> List String
-validateSignUp model =
-    []
-        |> passWordsMatch model.password model.repeatedPassword
-        |> handleInRange model.userHandle
-
-
-handleInRange : String -> List String -> List String
-handleInRange handle strings =
-    if String.length handle < 2 then
-        "handle needs at least two characters" :: strings
-
-    else if String.length handle > 4 then
-        "handle must be shorter than 4" :: strings
-
-    else
-        strings
-
-
-passWordsMatch : String -> String -> List String -> List String
-passWordsMatch p1 p2 strings =
-    if p1 == p2 then
-        strings
-
-    else
-        "passwords don't match" :: strings
 
 
 {-| This is the added update function. It handles all messages that can arrive from the backend.
@@ -283,8 +257,8 @@ updateFromBackend msg model =
         SystemMessage str ->
             ( { model | message = str }, Cmd.none )
 
-        AuthenticationFailure ->
-            { model | message = "No match" } |> withNoCmd
+        Failure message ->
+            { model | message = message } |> withNoCmd
 
 
 
@@ -308,11 +282,11 @@ mainView model =
             Start.view model
 
         ConferenceMode ->
-            conferenceView model
+            viewBoard model
 
 
-conferenceView : Model -> Element FrontendMsg
-conferenceView model =
+viewBoard : Model -> Element FrontendMsg
+viewBoard model =
   row [] [
       Board.view Config.playgroundWidth Config.playgroundHeight model
     , column [] [
@@ -354,10 +328,74 @@ timeoutInMs =
 
 
 
--- HELPERS
+-- HELPERS: SIGN IN, SIGN UP, MANAGE USER
 
 
-{-| Is the point inside the Board room?
+validateSignUp : Model -> List String
+validateSignUp model =
+    []
+        |> passWordsMatch model.password model.repeatedPassword
+        |> handleInRange model.userHandle
+
+
+handleInRange : String -> List String -> List String
+handleInRange handle strings =
+    if String.length handle < 2 then
+        "handle needs at least two characters" :: strings
+
+    else if String.length handle > 6 then
+        "handle must be shorter than 6" :: strings
+
+    else
+        strings
+
+
+passWordsMatch : String -> String -> List String -> List String
+passWordsMatch p1 p2 strings =
+    if p1 == p2 then
+        strings
+
+    else
+        "passwords don't match" :: strings
+
+
+deleteMe userHandle =
+    Lamdera.sendToBackend (DeleteUser userHandle)
+
+
+
+-- CHAT HELPERS
+
+
+clearMessages =
+    Lamdera.sendToBackend ClearStoredMessages
+
+
+joinChat str password =
+    Lamdera.sendToBackend (ClientJoin str password)
+
+
+leaveChat str =
+    Lamdera.sendToBackend (ClientLeave str)
+
+
+
+scrollChatToBottom : Cmd FrontendMsg
+scrollChatToBottom =
+    Dom.getViewportOf "message-box"
+        |> Task.andThen (\info -> Dom.setViewportOf "message-box" 0 info.scene.height)
+        |> Task.attempt (\_ -> Noop)
+
+
+focusOnMessageInputField : Cmd FrontendMsg
+focusOnMessageInputField =
+    Task.attempt (always Noop) (Dom.focus "message-input")
+
+
+
+-- USER TOKEN GRAPHICS
+
+{-| Is the point inside the Board?
 -}
 inBounds : Position -> Bool
 inBounds pos =
@@ -373,24 +411,6 @@ inBounds pos =
         + Config.playgroundHeight
 
 
-clearMessages =
-    Lamdera.sendToBackend ClearStoredMessages
-
-
-joinChat str password =
-    Lamdera.sendToBackend (ClientJoin (String.toUpper str) password)
-
-
-leaveChat str =
-    Lamdera.sendToBackend (ClientLeave str)
-
-
-deleteMe userHandle =
-    Lamdera.sendToBackend (DeleteUser userHandle)
-
-
-clearAll =
-    Lamdera.sendToBackend ClearAll
 
 
 clientPosition : UserHandle -> ClientDict -> Position
@@ -401,19 +421,6 @@ clientPosition userHandle clientDict =
 
         Just info ->
             { x = info.x, y = info.x }
-
-
-scrollChatToBottom : Cmd FrontendMsg
-scrollChatToBottom =
-    Dom.getViewportOf "message-box"
-        |> Task.andThen (\info -> Dom.setViewportOf "message-box" 0 info.scene.height)
-        |> Task.attempt (\_ -> Noop)
-
-
-focusOnMessageInputField : Cmd FrontendMsg
-focusOnMessageInputField =
-    Task.attempt (always Noop) (Dom.focus "message-input")
-
 
 toPosition : DragState -> Position
 toPosition dragState =
@@ -438,3 +445,10 @@ setClientPosition pos userHandle clientDict =
                            , y =  pos.y - Config.dragOffsetY }
             in
             Just ( newInfo, Dict.insert userHandle newInfo clientDict )
+
+-- DANGEROUS
+
+ 
+clearAll =
+    Lamdera.sendToBackend ClearAll
+

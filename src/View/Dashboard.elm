@@ -88,6 +88,6 @@ deleteMeButton =
 
 
 leaveChatButton =
-    Button.make LeaveChat "Leave chat"
+    Button.make LeaveChat "Sign out"
         |> Button.withWidth (Bounded 140)
         |> Button.toElement

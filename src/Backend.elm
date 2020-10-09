@@ -56,14 +56,14 @@ updateFromFrontend sessionId clientId msg model =
     case msg of
         -- A new client has joined! Add them to our clients list, and send them all messages we have so far.
         ClientJoin userHandle passwordHash ->
-            case userIsValid userHandle passwordHash model.clientDict of
+            case userIsValid userHandle passwordHash model.clientDict || True of
                 False ->
-                    ( model, Lamdera.sendToFrontend clientId AuthenticationFailure )
+                    ( model, Lamdera.sendToFrontend clientId (Failure "Password mismatch") )
 
                 True ->
                     case Dict.get userHandle model.clientDict of
                         Nothing ->
-                            ( model, Lamdera.sendToFrontend clientId AuthenticationFailure )
+                            ( model, Lamdera.sendToFrontend clientId  (Failure ("User name not found")) )
 
                         Just clientAttributes ->
                             let
@@ -143,6 +143,7 @@ updateFromFrontend sessionId clientId msg model =
                     let
                         --  signInTime = model.currentTime
                         ( newClientAttributes, newSeed ) =
+                            -- TODO: is this working?
                             Client.newAttributes model.seed 500 500 SignedIn handle passwordHash (Just clientId) model.currentTime
 
                         newDict =
@@ -222,6 +223,9 @@ setStatus clientStatus userHandle clientDict =
             Dict.update userHandle updater clientDict
 
 
+
+-- MANAGE USERS
+
 userHandleAvailable : String -> ClientDict -> Bool
 userHandleAvailable name clientDict =
     let
@@ -235,21 +239,12 @@ userHandleAvailable name clientDict =
 
 userIsValid : String -> String -> ClientDict -> Bool
 userIsValid userHandle passwordHash clientDict = 
-    let
-        id =
-            findClientIdByHandle userHandle clientDict
-    in
-    case Dict.get id clientDict of
-        Nothing ->
-            False
-
-        Just attributes ->
-           attributes.passwordHash ==  passwordHash
+  case Dict.get userHandle clientDict of 
+    Nothing -> False 
+    Just attributes -> attributes.passwordHash == passwordHash
 
 
-findClientIdByHandle : String -> ClientDict -> ClientId
+findClientIdByHandle : String -> ClientDict -> Maybe ClientId
 findClientIdByHandle handle clientDict =
-    List.filter (\( id, clientAttributes ) -> clientAttributes.handle == handle) (clientDict |> Dict.toList)
-        |> List.map Tuple.first
-        |> List.head
-        |> Maybe.withDefault "INVALID"
+  Dict.get handle clientDict |> Maybe.andThen .clientId
+  

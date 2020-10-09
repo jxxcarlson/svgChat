@@ -138,7 +138,7 @@ type ToFrontend
     | RegisterClientId ClientId String ClientDict
     | UpdateFrontEndClientDict ClientDict
     | HandleAvailable ClientId Bool
-    | AuthenticationFailure
+    | Failure String
     | SystemMessage String
 
 

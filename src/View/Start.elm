@@ -23,7 +23,7 @@ view model =
     column [ width fill, height fill, Background.color Style.black ]
         [ column [ centerX, centerY, width (px Config.playgroundWidth), height (px Config.playgroundWidth), Background.color Style.ochre ]
             [ signInUpModel model
-            , el [ paddingXY 32 8, Font.size 16, Font.italic ] (text "Username: 2 to 4 characters, all caps.")
+            , el [ paddingXY 32 8, Font.size 16, Font.italic ] (text "Username: 2 to 6 characters")
             ]
         ]
 
@@ -57,7 +57,7 @@ signUp model =
 signIn : Model -> Element FrontendMsg
 signIn model =
     column [ spacing 12, padding 30 ]
-        [ el [ Font.bold, Font.size 24 ] (Element.text "Sign in")
+        [ el [ Font.bold, Font.size 24, paddingXY 0 20] (Element.text "Welcome to SVG Chat")
         , userHandleInput model
         , passwordInput model
         , joinChatButton
@@ -79,7 +79,7 @@ cancelSignUpButton =
 
 
 joinChatButton =
-    Button.make JoinChat "Join chat"
+    Button.make JoinChat "Sign in"
         |> Button.withWidth (Bounded 120)
         |> Button.toElement
 

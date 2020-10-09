@@ -107,8 +107,11 @@ renderHandle ca =
         , Svg.Attributes.fontSize "12px"
         , Svg.Attributes.fill (toCssString ca.fontColor)
         ]
-        [ Svg.text ca.handle ]
+        [ Svg.text (normalize ca.handle) ]
 
+normalize : String -> String
+normalize str = 
+  str |> String.toUpper |> String.left 3
 
 renderCircle : ClientAttributes -> Svg FrontendMsg
 renderCircle ca =
@@ -248,4 +251,4 @@ getColors k =
 
 encrypt : String -> String
 encrypt str =
-    Crypto.HMAC.digest sha512 "Fee, fie, fo fum said the green giant!" str
+    Crypto.HMAC.digest sha512 "Fee fie fo!" str
