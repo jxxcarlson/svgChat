@@ -234,17 +234,17 @@ userHandleAvailable name clientDict =
 
 
 userIsValid : String -> String -> ClientDict -> Bool
-userIsValid userHandle passwordHash clientDict = True
-    -- let
-    --     id =
-    --         findClientIdByHandle userHandle clientDict
-    -- in
-    -- case Dict.get id clientDict of
-    --     Nothing ->
-    --         False
+userIsValid userHandle passwordHash clientDict = 
+    let
+        id =
+            findClientIdByHandle userHandle clientDict
+    in
+    case Dict.get id clientDict of
+        Nothing ->
+            False
 
-    --     Just attributes ->
-    --         attributes.passwordHash == passwordHash
+        Just attributes ->
+            Debug.log "p1" attributes.passwordHash ==  Debug.log "p2" passwordHash
 
 
 findClientIdByHandle : String -> ClientDict -> ClientId

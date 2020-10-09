@@ -7,3 +7,6 @@ scripts:
 
   clean:
     - rm -rf lamdera-stuff
+
+  cloc: 
+    cloc --by-file --exclude-dir=Evergreen src

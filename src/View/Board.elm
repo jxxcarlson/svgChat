@@ -1,4 +1,4 @@
-module View.Conference exposing (view)
+module View.Board exposing (view)
 
 import Client
 import Config

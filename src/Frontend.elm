@@ -18,7 +18,7 @@ import Task
 import Time
 import Types exposing (..)
 import View.Chat as Chat
-import View.Conference as Conference
+import View.Board as Board
 import View.Dashboard as Dashboard
 import View.Roster as Roster
 import View.Start as Start
@@ -40,7 +40,7 @@ app =
         , updateFromBackend = updateFromBackend
         , view =
             \model ->
-                { title = "Lamdera chat demo"
+                { title = "SVG Chat"
                 , body = [ view model ]
                 }
         , subscriptions = subscriptions
@@ -217,11 +217,11 @@ validateSignUp model =
 
 
 handleInRange : String -> List String -> List String
-handleInRange passwd strings =
-    if String.length passwd < 2 then
+handleInRange handle strings =
+    if String.length handle < 2 then
         "handle needs at least two characters" :: strings
 
-    else if String.length passwd > 4 then
+    else if String.length handle > 4 then
         "handle must be shorter than 4" :: strings
 
     else
@@ -314,7 +314,7 @@ mainView model =
 conferenceView : Model -> Element FrontendMsg
 conferenceView model =
   row [] [
-      Conference.view Config.playgroundWidth Config.playgroundHeight model
+      Board.view Config.playgroundWidth Config.playgroundHeight model
     , column [] [
         menuBar model
        , case model.panelSelected of
@@ -344,7 +344,7 @@ chooseChat model =
     --         [ Chat.view model
     --         , Dashboard.view model
     --         ]
-    --     , Conference.view 502 502 model
+    --     , Board.view 502 502 model
     --     , Roster.view model
     --     ]
 
@@ -357,7 +357,7 @@ timeoutInMs =
 -- HELPERS
 
 
-{-| Is the point inside the conference room?
+{-| Is the point inside the Board room?
 -}
 inBounds : Position -> Bool
 inBounds pos =
