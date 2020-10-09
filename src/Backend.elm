@@ -244,7 +244,7 @@ userIsValid userHandle passwordHash clientDict =
             False
 
         Just attributes ->
-            Debug.log "p1" attributes.passwordHash ==  Debug.log "p2" passwordHash
+           attributes.passwordHash ==  passwordHash
 
 
 findClientIdByHandle : String -> ClientDict -> ClientId
