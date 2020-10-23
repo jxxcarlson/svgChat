@@ -10,7 +10,7 @@ import Set exposing (Set, map)
 import Task
 import Time
 import Types exposing (..)
-
+import String exposing (fromFloat)
 
 app =
     Lamdera.backend
@@ -127,7 +127,8 @@ updateFromFrontend sessionId clientId msg model =
                 newDict =
                     Dict.insert userHandle clientAttributes model.clientDict
             in
-            ( { model | clientDict = newDict }, broadcast model.clients (UpdateFrontEndClientDict newDict) )
+            ( { model | clientDict = (newDict |> antiCollision) },
+                  broadcast model.clients (UpdateFrontEndClientDict newDict) )
 
         CheckClientRegistration handle passwordHash ->
             -- Register new user
@@ -166,7 +167,47 @@ updateFromFrontend sessionId clientId msg model =
 
 -- HELPERS
 
+type alias UserPair = (UserHandle, ClientAttributes)
 
+antiCollision : ClientDict -> ClientDict
+antiCollision d = let collisions = findCollisions d
+                  in updateDict d collisions
+
+updateDict : ClientDict -> List (UserPair, UserPair) -> ClientDict
+updateDict d = let f ((a, as_), (b, bs_)) acc =
+                       let (newX, newY) = updateSingle as_ bs_
+                           maybeUpdate d_ =
+                               case d_ of
+                                   Nothing -> Nothing 
+                                   (Just acc_) -> Just { acc_ | x = newX, y = newY }
+                       in Dict.update a maybeUpdate acc
+               in List.foldr f d              
+
+updateSingle : ClientAttributes -> ClientAttributes -> (Float, Float)
+updateSingle a b =
+    let dx = if a.x >= b.x then a.radius/2 else -(a.radius/2)
+        dy = if a.y >= b.y then a.radius/2 else -(a.radius/2)
+    in (a.x + dx * 1.2, a.y + dy * 1.2)
+                       
+findCollisions : ClientDict -> List (UserPair, UserPair)
+findCollisions d = Dict.toList d
+                   |> genPairs
+                   |> List.concatMap (\(x, xs) -> findCollision x xs)
+                
+genPairs : List UserPair -> List (UserPair, List UserPair)
+genPairs xs = xs |> List.map (\x -> (x, List.filter (\x_ -> x /= x_) xs))
+                    
+findCollision : UserPair -> List UserPair -> List (UserPair, UserPair)
+findCollision x xs = let f x_ acc = if overlap x x_ then (x, x_)::acc else acc
+                     in xs |> List.foldr f []
+
+-- axis-aligned collision detection -- no axis borders overlap                         
+overlap : UserPair -> UserPair -> Bool
+overlap (ua, a) (ub, b) = ((a.x - a.radius < b.x + b.radius) &&
+                           (a.x + a.radius > b.x - b.radius) &&
+                           (a.y - a.radius < b.y + b.radius) &&
+                           (a.y + a.radius > b.y - b.radius))
+                                    
 clearAll model =
     ( { model | clientDict = Dict.empty, messages = [], clients = Set.empty }
     , Cmd.batch
