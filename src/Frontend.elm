@@ -341,10 +341,7 @@ validateSignUp model =
 handleInRange : String -> List String -> List String
 handleInRange handle strings =
     if String.length handle < 2 then
-        "handle needs at least two characters" :: strings
-
-    else if String.length handle > 6 then
-        "handle must be shorter than 6" :: strings
+        "User name needs at least three characters" :: strings
 
     else
         strings
