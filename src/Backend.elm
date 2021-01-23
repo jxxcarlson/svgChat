@@ -63,7 +63,7 @@ updateFromFrontend sessionId clientId msg model =
                 True ->
                     case Dict.get userHandle model.clientDict of
                         Nothing ->
-                            ( model, Lamdera.sendToFrontend clientId  (Failure ("User name not found")) )
+                            ( model, Lamdera.sendToFrontend clientId  (Failure ("Authentication name not found")) )
 
                         Just clientAttributes ->
                             let

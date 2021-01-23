@@ -91,7 +91,7 @@ signUpButton =
 
 
 userHandleInput model =
-    TextField.make GotUserHandle model.userHandle "User name"
+    TextField.make GotUserHandle model.userHandle "Authentication name"
         |> TextField.withHeight 30
         |> TextField.withWidth 120
         |> TextField.withLabelWidth 120

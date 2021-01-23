@@ -47,7 +47,7 @@ type aias Position = { x: Int, y: Int }
 
   type alias Username = String
 
-  type alias ClientDict = Dict Username User
+  type alias ClientDict = Dict Username Authentication
 
 -}
 

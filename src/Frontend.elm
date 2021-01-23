@@ -1,5 +1,6 @@
 module Frontend exposing (Model, app)
 
+import Authentication
 import Browser.Dom as Dom
 import Browser.Events
 import Client
@@ -91,11 +92,11 @@ init =
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
 update msg model =
     case msg of
-        -- User has changed the contents of the message field
+        -- Authentication has changed the contents of the message field
         MessageFieldChanged s ->
             ( { model | messageFieldContent = s }, Cmd.none )
 
-        -- User has hit the Send button
+        -- Authentication has hit the Send button
         MessageSubmitted ->
             ( { model | messageFieldContent = "", messages = model.messages }
             , Cmd.batch
@@ -174,7 +175,7 @@ update msg model =
             ( { model | messages = [] }, Cmd.none )
 
         SignUp ->
-            case validateSignUp model of
+            case Authentication.validateSignUp model.userHandle model.password model.repeatedPassword of
                 [] ->
                     ( model, Lamdera.sendToBackend (CheckClientRegistration model.userHandle (Client.encrypt model.password)) )
 
@@ -329,31 +330,6 @@ timeoutInMs =
 
 
 -- HELPERS: SIGN IN, SIGN UP, MANAGE USER
-
-
-validateSignUp : Model -> List String
-validateSignUp model =
-    []
-        |> passWordsMatch model.password model.repeatedPassword
-        |> handleInRange model.userHandle
-
-
-handleInRange : String -> List String -> List String
-handleInRange handle strings =
-    if String.length handle < 2 then
-        "User name needs at least three characters" :: strings
-
-    else
-        strings
-
-
-passWordsMatch : String -> String -> List String -> List String
-passWordsMatch p1 p2 strings =
-    if p1 == p2 then
-        strings
-
-    else
-        "passwords don't match" :: strings
 
 
 deleteMe userHandle =
