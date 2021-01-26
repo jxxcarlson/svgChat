@@ -1,6 +1,8 @@
 module Authentication exposing (..)
 
 
+
+
 validateSignUp : String -> String -> String -> List String
 validateSignUp userHandle password repeatedPassword =
     []
